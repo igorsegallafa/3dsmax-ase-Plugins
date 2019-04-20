@@ -1720,7 +1720,9 @@ BOOL AsciiImp::ImportGeomObject()
 		}
 		else if (Compare(token, ID_TM_ANIMATION)) 
 		{
-			ImportTMAnimation();
+			//Node are not Footsteps? so import.
+			if ( std::wstring(nodeName).find(L"Footsteps") == std::wstring::npos )
+				ImportTMAnimation();
 		}
 		else if (Compare(token, ID_PHYSIQUE)) 
 		{

@@ -48,6 +48,7 @@
     <LibraryPath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib\x64\Release;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <EmbedManifest>false</EmbedManifest>
+    <OutDir>C:\Program Files\Autodesk\3ds Max 2018\plugins\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'">
     <ClCompile>
@@ -75,7 +76,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>asciiimp.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
