@@ -50,7 +50,6 @@ void AsciiExp::ExportAnimKeys(INode* node, int indentLevel)
 			bDoKeys = TRUE;
 		}
 	}
-
 	if (bDoKeys) {
 		// Only dump the track header if any of the controllers have keys
 		if (node->GetTMController()->GetPositionController()->NumKeys() ||
@@ -107,6 +106,14 @@ void AsciiExp::ExportAnimKeys(INode* node, int indentLevel)
 
 BOOL AsciiExp::CheckForAnimation(INode* node, BOOL& bPos, BOOL& bRot, BOOL& bScale)
 {
+	if ( GetIsGameMode() )
+	{
+		bPos = TRUE;
+		bRot = TRUE;
+		bScale = TRUE;
+		return TRUE;
+	}
+
 	TimeValue start = ip->GetAnimRange().Start();
 	TimeValue end = ip->GetAnimRange().End();
 	TimeValue t;
@@ -522,8 +529,9 @@ void AsciiExp::DumpPosKeys(Control* cont, int indentLevel)
 	
 	int i;
 	TSTR indent = GetIndent(indentLevel);
-	IKeyControl *ikc = GetKeyControlInterface(cont);
-	
+	IKeyControl *ikc = GetKeyControlInterface( cont );
+	IAdjustTangents *iTC = GetTangentInterface( cont );
+
 	// TCB position
 	if (ikc && cont->ClassID() == Class_ID(TCBINTERP_POSITION_CLASS_ID, 0)) {
 		int numKeys;
@@ -550,8 +558,8 @@ void AsciiExp::DumpPosKeys(Control* cont, int indentLevel)
 		{
 			fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), ID_CONTROL_POS_BEZIER); 
 			for (i=0; i<numKeys; i++) {
-				IBezPoint3Key key;
-				ikc->GetKey(i, &key);
+				IBezPoint3Key key;				
+				ikc->GetKey( i, &key );
 				fwprintf(pStream,L"%s\t\t\t%s %d\t%s",
 					indent.data(), 
 					ID_BEZIER_POS_KEY,
@@ -570,7 +578,7 @@ void AsciiExp::DumpPosKeys(Control* cont, int indentLevel)
 			fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), ID_CONTROL_POS_LINEAR); 
 			for (i=0; i<numKeys; i++) {
 				ILinPoint3Key key;
-				ikc->GetKey(i, &key);
+				ikc->GetKey( i, &key );
 				fwprintf(pStream,L"%s\t\t\t%s %d\t%s\n",
 					indent.data(),
 					ID_POS_KEY,

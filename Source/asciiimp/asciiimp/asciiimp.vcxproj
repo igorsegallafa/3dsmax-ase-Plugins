@@ -76,7 +76,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>asciiimp.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

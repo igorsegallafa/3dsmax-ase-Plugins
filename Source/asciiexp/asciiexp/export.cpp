@@ -109,7 +109,6 @@ void AsciiExp::ExportGeomObject(INode* node, int indentLevel)
 	if (os.obj->ClassID() == Class_ID(TARGET_CLASS_ID, 0))
 		return;
 	
-	
 	TSTR indent = GetIndent(indentLevel);
 	
 	ExportNodeHeader(node, ID_GEOMETRY, indentLevel);
