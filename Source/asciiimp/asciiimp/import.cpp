@@ -797,6 +797,15 @@ BOOL AsciiImp::ImportTMAnimation()
 				posKey.intan = p->inTan;
 				posKey.outtan = p->outTan;
 				posKey.flags = p->flags;
+
+				//Game Mode?
+				if ( gameMode )
+				{
+					//Set Key Tangents to Linear
+					SetInTanType( posKey.flags, BEZKEY_LINEAR );
+					SetOutTanType( posKey.flags, BEZKEY_LINEAR );
+				}
+
 				posCont->SetKey(i, &posKey);
 			}
 			else if (p->type == kTCB) 
@@ -809,6 +818,15 @@ BOOL AsciiImp::ImportTMAnimation()
 				posKey.bias = p->bias;
 				posKey.easeIn = p->easeIn;
 				posKey.easeOut = p->easeOut;
+
+				//Game Mode?
+				if ( gameMode )
+				{
+					//Set Key Tangents to Linear
+					SetInTanType( posKey.flags, BEZKEY_LINEAR );
+					SetOutTanType( posKey.flags, BEZKEY_LINEAR );
+				}
+
 				posCont->SetKey(i, &posKey);
 			}
 			else if (p->type == kStd) 

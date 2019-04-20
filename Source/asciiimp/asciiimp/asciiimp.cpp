@@ -101,6 +101,7 @@ ClassDesc* GetAsciiImpDesc() {return &AsciiImpDesc;}
 BOOL AsciiImp::resetScene = TRUE;
 BOOL AsciiImp::phys2skin = TRUE;
 BOOL AsciiImp::ignoreInherit = TRUE;
+BOOL AsciiImp::gameMode = TRUE;
 
 AsciiImp::AsciiImp()
 {
@@ -198,15 +199,17 @@ static INT_PTR CALLBACK ImportDlgProc(
 		CenterWindow(hWnd, GetParent(hWnd)); 
 		CheckDlgButton(hWnd, IDC_RESETSCENE, imp->resetScene);
 		CheckDlgButton(hWnd, IDC_PHYSIQUETOSKIN, imp->phys2skin);
-		CheckDlgButton(hWnd, IDC_IGNOREINHERIT, imp->ignoreInherit);
-		
+		CheckDlgButton( hWnd, IDC_IGNOREINHERIT, imp->ignoreInherit );
+		CheckDlgButton( hWnd, IDC_GAMEMODE, imp->gameMode );
+
 		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
 			imp->resetScene = IsDlgButtonChecked(hWnd, IDC_RESETSCENE);
 			imp->phys2skin = IsDlgButtonChecked(hWnd, IDC_PHYSIQUETOSKIN);
-			imp->ignoreInherit = IsDlgButtonChecked(hWnd, IDC_IGNOREINHERIT);
+			imp->ignoreInherit = IsDlgButtonChecked( hWnd, IDC_IGNOREINHERIT );
+			imp->gameMode = IsDlgButtonChecked( hWnd, IDC_GAMEMODE );
 
 			EndDialog(hWnd, 1);
 			break;
