@@ -2535,6 +2535,7 @@ BOOL AsciiImp::GetStandardMtl(Mtl*& mtl)
 
 						if( hasAlphaChannel )
 						{
+							bitmapTex->SetAlphaAsMono( TRUE );
 							stdMtl->SetSubTexmap( ID_OP, tex );
 							stdMtl->SetTexmapAmt( ID_OP, amount, 0 );
 							stdMtl->EnableMap( ID_OP, TRUE );
