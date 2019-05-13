@@ -109,6 +109,7 @@ AsciiExp::AsciiExp()
 	bIncludeIKJoints = FALSE;
 	bIncludePhysique = TRUE;
 	bIncludePhysiqueAsSkin = TRUE;
+	bGameMode = FALSE;
 	bIncludeNormals  =  FALSE;
 	bIncludeTextureCoords = FALSE;
 	bIncludeVertexColors = FALSE;
@@ -589,8 +590,9 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		CheckDlgButton(hWnd, IDC_IKJOINTS, exp->GetIncludeIKJoints()); 
 #endif // !DESIGN_VER
 		CheckDlgButton(hWnd, IDC_PHYSIQUE, exp->GetIncludePhysique()); 
-		CheckDlgButton(hWnd, IDC_PHYSIQUEASSKIN, exp->GetIncludePhysiqueAsSkin()); 
-		CheckDlgButton(hWnd, IDC_NORMALS,  exp->GetIncludeNormals()); 
+		CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, exp->GetIncludePhysiqueAsSkin() );
+		CheckDlgButton( hWnd, IDC_GAMEMODE, exp->GetIsGameMode() );
+		CheckDlgButton(hWnd, IDC_NORMALS,  exp->GetIncludeNormals());
 		CheckDlgButton(hWnd, IDC_TEXCOORDS,exp->GetIncludeTextureCoords()); 
 		CheckDlgButton(hWnd, IDC_VERTEXCOLORS,exp->GetIncludeVertexColors()); 
 		CheckDlgButton(hWnd, IDC_OBJ_GEOM,exp->GetIncludeObjGeom()); 
@@ -667,7 +669,8 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 			exp->SetIncludeIKJoints(IsDlgButtonChecked(hWnd, IDC_IKJOINTS)); 
 #endif // !DESIGN_VER
 			exp->SetIncludePhysique(IsDlgButtonChecked(hWnd, IDC_PHYSIQUE)); 
-			exp->SetIncludePhysiqueAsSkin(IsDlgButtonChecked(hWnd, IDC_PHYSIQUEASSKIN)); 
+			exp->SetIncludePhysiqueAsSkin( IsDlgButtonChecked( hWnd, IDC_PHYSIQUEASSKIN ) );
+			exp->SetGameMode( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
 			exp->SetIncludeNormals(IsDlgButtonChecked(hWnd, IDC_NORMALS));
 			exp->SetIncludeTextureCoords(IsDlgButtonChecked(hWnd, IDC_TEXCOORDS)); 
 			exp->SetIncludeVertexColors(IsDlgButtonChecked(hWnd, IDC_VERTEXCOLORS)); 

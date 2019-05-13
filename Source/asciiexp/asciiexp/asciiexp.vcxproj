@@ -43,8 +43,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\3dsmax ASE importer exporter\SDK\3dsmax6\maxsdk2012\include\CS;D:\3dsmax ASE importer exporter\SDK\3dsmax6\maxsdk2012\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\3dsmax ASE importer exporter\SDK\3dsmax6\maxsdk2012\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include\CS;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib\x64\Release;$(LibraryPath)</LibraryPath>
     <TargetExt>.dle</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|x64'">
@@ -52,6 +52,7 @@
     <IncludePath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include\CS;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib\x64\Release;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib;$(LibraryPath)</LibraryPath>
     <TargetExt>.dle</TargetExt>
+    <OutDir>C:\Program Files\Autodesk\3ds Max 2018\Plugins\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'">
     <ClCompile>

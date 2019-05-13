@@ -195,7 +195,8 @@ public:
 	static BOOL resetScene;
 	static BOOL phys2skin;
 	static BOOL ignoreInherit;
-	
+	static BOOL gameMode;
+
 private:
 	std::wstring	fileName;
 	std::wstring	baseFilePath;
