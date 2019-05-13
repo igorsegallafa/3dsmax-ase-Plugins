@@ -196,7 +196,7 @@ public:
 	static BOOL phys2skin;
 	static BOOL ignoreInherit;
 	static BOOL gameMode;
-
+	static BOOL autoOpacityMap;
 private:
 	std::wstring	fileName;
 	std::wstring	baseFilePath;

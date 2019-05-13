@@ -2525,46 +2525,49 @@ BOOL AsciiImp::GetStandardMtl(Mtl*& mtl)
 				MSTR className;
 				tex->GetClassName( className );
 
-				if( lstrcmpW( className, L"Bitmap" ) == 0 )
+				if( autoOpacityMap )
 				{
-					BitmapTex * bitmapTex = (BitmapTex*)tex;
-					Bitmap * bitmap = bitmapTex->GetBitmap( 0 );
-					
-					bool hasAlphaChannel = false;
-
-					if( bitmap )
+					if( lstrcmpW( className, L"Bitmap" ) == 0 )
 					{
-						//Check if have alpha channel
-						for( int i = 0; i < bitmap->GetBitmapInfo().Width(); i++ )
+						BitmapTex* bitmapTex = (BitmapTex*)tex;
+						Bitmap* bitmap = bitmapTex->GetBitmap( 0 );
+
+						bool hasAlphaChannel = false;
+
+						if( bitmap )
 						{
-							if( hasAlphaChannel )
-								break;
-
-							for( int j = 0; j < bitmap->GetBitmapInfo().Height(); j++ )
+							//Check if have alpha channel
+							for( int i = 0; i < bitmap->GetBitmapInfo().Width(); i++ )
 							{
-								BMM_Color_64 pixel;
-								bitmap->GetPixels( i, j, 1, &pixel );
-
-								if( pixel.a < 255 )
-								{
-									hasAlphaChannel = true;
+								if( hasAlphaChannel )
 									break;
+
+								for( int j = 0; j < bitmap->GetBitmapInfo().Height(); j++ )
+								{
+									BMM_Color_64 pixel;
+									bitmap->GetPixels( i, j, 1, &pixel );
+
+									if( pixel.a < 255 )
+									{
+										hasAlphaChannel = true;
+										break;
+									}
 								}
 							}
-						}
 
-						if( hasAlphaChannel )
-						{
-							bitmapTex->SetAlphaAsMono( TRUE );
-							stdMtl->SetSubTexmap( ID_OP, tex );
-							stdMtl->SetTexmapAmt( ID_OP, amount, 0 );
-							stdMtl->EnableMap( ID_OP, TRUE );
+							if( hasAlphaChannel )
+							{
+								bitmapTex->SetAlphaAsMono( TRUE );
+								stdMtl->SetSubTexmap( ID_OP, tex );
+								stdMtl->SetTexmapAmt( ID_OP, amount, 0 );
+								stdMtl->EnableMap( ID_OP, TRUE );
+							}
 						}
 					}
+
+					tex->ActivateTexDisplay( TRUE );
+					tex->SetMtlFlag( MTL_TEX_DISPLAY_ENABLED, TRUE );
 				}
-			
-				tex->ActivateTexDisplay( TRUE );
-				tex->SetMtlFlag( MTL_TEX_DISPLAY_ENABLED, TRUE );
 
 				stdMtl->ActivateTexDisplay( TRUE );
 				stdMtl->SetMtlFlag( MTL_TEX_DISPLAY_ENABLED, TRUE );
@@ -2613,6 +2616,9 @@ BOOL AsciiImp::GetStandardMtl(Mtl*& mtl)
 			float amount = 0.0f;
 			Texmap* tex = GetTexture(amount);
 			if (tex) {
+				BitmapTex* bitmapTex = (BitmapTex*)tex;
+
+				bitmapTex->SetAlphaAsMono( TRUE );
 				stdMtl->SetSubTexmap(ID_OP, tex);
 				stdMtl->SetTexmapAmt(ID_OP, amount, 0);
 				stdMtl->EnableMap(ID_OP, TRUE);

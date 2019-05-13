@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="3dsmax2018|Win32">
-      <Configuration>3dsmax2018</Configuration>
+    <ProjectConfiguration Include="3dsmax2020|Win32">
+      <Configuration>3dsmax2020</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="3dsmax2018|x64">
-      <Configuration>3dsmax2018</Configuration>
+    <ProjectConfiguration Include="3dsmax2020|x64">
+      <Configuration>3dsmax2020</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -17,17 +17,17 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|Win32'" Label="Configuration">
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|x64'" Label="Configuration">
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
@@ -35,22 +35,22 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|Win32'">
     <TargetExt>.dli</TargetExt>
     <IncludePath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include\CS;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib\x64\Release;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <EmbedManifest>false</EmbedManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|x64'">
     <TargetExt>.dli</TargetExt>
-    <IncludePath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include\CS;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib\x64\Release;C:\Program Files\Autodesk\3ds Max 2018 SDK\maxsdk\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Autodesk\3ds Max 2020 SDK\maxsdk\include\CS;C:\Program Files\Autodesk\3ds Max 2020 SDK\maxsdk\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Autodesk\3ds Max 2020 SDK\maxsdk\lib\x64\Release;C:\Program Files\Autodesk\3ds Max 2020 SDK\maxsdk\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
     <EmbedManifest>false</EmbedManifest>
-    <OutDir>C:\Program Files\Autodesk\3ds Max 2018\plugins\</OutDir>
+    <OutDir>C:\Program Files\Autodesk\3ds Max 2020\stdplugs\</OutDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -65,7 +65,7 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2018|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='3dsmax2020|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <IntrinsicFunctions>true</IntrinsicFunctions>

@@ -564,7 +564,6 @@ static INT_PTR CALLBACK AboutBoxDlgProc(HWND hWnd, UINT msg,
 
 void AsciiExp::ShowAbout(HWND hWnd)
 {
-	DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, AboutBoxDlgProc, 0);
 }
 
 
@@ -600,6 +599,16 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		CheckDlgButton(hWnd, IDC_OBJ_CAMERA,exp->GetIncludeObjCamera()); 
 		CheckDlgButton(hWnd, IDC_OBJ_LIGHT,exp->GetIncludeObjLight()); 
 		CheckDlgButton(hWnd, IDC_OBJ_HELPER,exp->GetIncludeObjHelper());
+
+		// Setup Combo Box
+		{
+			TCHAR menu[3][12] = { TEXT( "Undefined" ), TEXT( "Static Mesh" ), TEXT( "Terrain" ) };
+
+			for( int i = 0; i < 3; i++ )
+				SendMessage( GetDlgItem(hWnd, IDC_COMBO1), (UINT)CB_ADDSTRING, (WPARAM)0, (LPARAM)menu[i] );
+
+			SendMessage( GetDlgItem(hWnd, IDC_COMBO1), CB_SETCURSEL, (WPARAM)0, (LPARAM)0 );
+		}
 
 		CheckRadioButton(hWnd, IDC_RADIO_USEKEYS, IDC_RADIO_SAMPLE, 
 			exp->GetAlwaysSample() ? IDC_RADIO_SAMPLE : IDC_RADIO_USEKEYS);
@@ -649,6 +658,61 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		break;
 
 	case WM_COMMAND:
+		switch (HIWORD(wParam)) {
+			case CBN_SELCHANGE:
+			{
+				int ItemIndex = SendMessage( (HWND)lParam, (UINT)CB_GETCURSEL,(WPARAM)0, (LPARAM)0 );
+
+				//Static Mesh
+				if( ItemIndex == 1 )
+				{
+					CheckDlgButton( hWnd, IDC_MESHDATA, TRUE );
+					CheckDlgButton( hWnd, IDC_ANIMKEYS, FALSE );
+					CheckDlgButton( hWnd, IDC_MATERIAL, TRUE );
+					CheckDlgButton( hWnd, IDC_MESHANIM, FALSE );
+					CheckDlgButton( hWnd, IDC_CAMLIGHTANIM, FALSE );
+#ifndef DESIGN_VER
+					CheckDlgButton( hWnd, IDC_IKJOINTS, FALSE );
+#endif // !DESIGN_VER
+					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
+					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
+					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
+					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
+					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
+					CheckDlgButton( hWnd, IDC_VERTEXCOLORS, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_GEOM, TRUE );
+					CheckDlgButton( hWnd, IDC_OBJ_SHAPE, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_CAMERA, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_LIGHT, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_HELPER, FALSE );
+				}
+				//Terrain
+				else if( ItemIndex == 2 )
+				{
+					CheckDlgButton( hWnd, IDC_MESHDATA, TRUE );
+					CheckDlgButton( hWnd, IDC_ANIMKEYS, FALSE );
+					CheckDlgButton( hWnd, IDC_MATERIAL, TRUE );
+					CheckDlgButton( hWnd, IDC_MESHANIM, FALSE );
+					CheckDlgButton( hWnd, IDC_CAMLIGHTANIM, FALSE );
+#ifndef DESIGN_VER
+					CheckDlgButton( hWnd, IDC_IKJOINTS, FALSE );
+#endif // !DESIGN_VER
+					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
+					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
+					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
+					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
+					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
+					CheckDlgButton( hWnd, IDC_VERTEXCOLORS, TRUE );
+					CheckDlgButton( hWnd, IDC_OBJ_GEOM, TRUE );
+					CheckDlgButton( hWnd, IDC_OBJ_SHAPE, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_CAMERA, FALSE );
+					CheckDlgButton( hWnd, IDC_OBJ_LIGHT, TRUE );
+					CheckDlgButton( hWnd, IDC_OBJ_HELPER, FALSE );
+				}
+			}
+			break;
+		}
+
 		switch (LOWORD(wParam)) {
 		case IDC_MESHDATA:
 			// Enable / disable mesh options
