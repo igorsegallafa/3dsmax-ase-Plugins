@@ -3065,8 +3065,20 @@ BOOL AsciiImp::GetBitmapTexture(Texmap*& tex, float& amount)
 		else if (Compare(token, ID_BITMAP)) 
 		{
 			std::wstring originalTextureFile = GetString();
-			originalTextureFile = originalTextureFile.substr( originalTextureFile.find_last_of( '\\' ) + 1 );
-			bmtex->SetMapName( std::wstring(baseFilePath + originalTextureFile).c_str() );
+
+			FILE* pFile = nullptr;
+			_wfopen_s( &pFile, originalTextureFile.c_str(), L"rb" );
+
+			if( pFile )
+			{
+				bmtex->SetMapName( originalTextureFile.c_str() );
+				fclose( pFile );
+			}
+			else
+			{
+				originalTextureFile = originalTextureFile.substr( originalTextureFile.find_last_of( '\\' ) + 1 );
+				bmtex->SetMapName( std::wstring( baseFilePath + originalTextureFile ).c_str() );
+			}
 		}
 		else if (Compare(token, ID_TEXAMOUNT)) {
 			amount = GetFloat();

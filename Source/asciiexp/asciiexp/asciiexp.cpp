@@ -110,6 +110,7 @@ AsciiExp::AsciiExp()
 	bIncludePhysique = TRUE;
 	bIncludePhysiqueAsSkin = TRUE;
 	bGameMode = FALSE;
+	bLightningMap = FALSE;
 	bIncludeNormals  =  FALSE;
 	bIncludeTextureCoords = FALSE;
 	bIncludeVertexColors = FALSE;
@@ -744,6 +745,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 			exp->SetIncludeObjLight(IsDlgButtonChecked(hWnd, IDC_OBJ_LIGHT)); 
 			exp->SetIncludeObjHelper(IsDlgButtonChecked(hWnd, IDC_OBJ_HELPER));
 			exp->SetAlwaysSample(IsDlgButtonChecked(hWnd, IDC_RADIO_SAMPLE));
+			exp->SetLightningMap( IsDlgButtonChecked( hWnd, IDC_LIGHTNINGMAP ) );
 
 			spin = GetISpinner(GetDlgItem(hWnd, IDC_CONT_STEP_SPIN)); 
 			exp->SetKeyFrameStep(spin->GetIVal()); 

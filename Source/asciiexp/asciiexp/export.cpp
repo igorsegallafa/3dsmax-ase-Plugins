@@ -792,35 +792,67 @@ void AsciiExp::ExportMesh(INode* node, TimeValue t, int indentLevel)
 		// New for R3 - Additional mapping channels
 		for (int mp = 2; mp < MAX_MESHMAPS-1; mp++) {
 			if (mesh->mapSupport(mp)) {
+				auto UsingMapChannel = true;
+				auto MatID = mesh->faces[0].getMatID();
 
-				fwprintf(pStream,L"%s\t%s %d {\n",indent.data(), ID_MESH_MAPPINGCHANNEL, mp);
+				if( GetIsLightningMap() == TRUE )
+				{
+					UsingMapChannel = false;
 
+					if( nodeMtl )
+					{
+						for( int subTexmapID = 0; subTexmapID < NTEXMAPS; subTexmapID++ )
+						{
+							if( nodeMtl->SubTexmapOn( subTexmapID ) )
+							{
+								auto Texmap = (BitmapTex*)nodeMtl->GetSubTexmap( subTexmapID );
 
-				int numTVx = mesh->getNumMapVerts(mp);
-				fwprintf(pStream,L"%s\t\t%s %d\n",indent.data(), ID_MESH_NUMTVERTEX, numTVx);
-
-				if (numTVx) {
-					fwprintf(pStream,L"%s\t\t%s {\n",indent.data(), ID_MESH_TVERTLIST);
-					for (i=0; i<numTVx; i++) {
-						UVVert tv = mesh->mapVerts(mp)[i];
-						fwprintf(pStream,L"%s\t\t\t%s %d\t%s\n",indent.data(), ID_MESH_TVERT, i, Format(tv).data() );
+								if( Texmap )
+								{
+									if( Texmap->GetMapChannel() == mp )
+									{
+										UsingMapChannel = true;
+										break;
+									}
+								}
+							}
+						}
 					}
-					fwprintf(pStream,L"%s\t\t}\n",indent.data());
-					
-					fwprintf(pStream,L"%s\t\t%s %d\n",indent.data(), ID_MESH_NUMTVFACES, mesh->getNumFaces());
-
-					fwprintf(pStream,L"%s\t\t%s {\n",indent.data(), ID_MESH_TFACELIST);
-					for (i=0; i<mesh->getNumFaces(); i++) {
-						fwprintf(pStream,L"%s\t\t\t%s %d\t%d\t%d\t%d\n",
-							indent.data(),
-							ID_MESH_TFACE, i,
-							mesh->mapFaces(mp)[i].t[vx1],
-							mesh->mapFaces(mp)[i].t[vx2],
-							mesh->mapFaces(mp)[i].t[vx3]);
-					}
-					fwprintf(pStream,L"%s\t\t}\n",indent.data());
 				}
-				fwprintf(pStream,L"%s\t}\n",indent.data());
+
+				if( UsingMapChannel )
+				{
+					fwprintf( pStream, L"%s\t%s %d {\n", indent.data(), ID_MESH_MAPPINGCHANNEL, mp );
+
+					int numTVx = mesh->getNumMapVerts( mp );
+					fwprintf( pStream, L"%s\t\t%s %d\n", indent.data(), ID_MESH_NUMTVERTEX, numTVx );
+
+					if( numTVx )
+					{
+						fwprintf( pStream, L"%s\t\t%s {\n", indent.data(), ID_MESH_TVERTLIST );
+						for( i = 0; i < numTVx; i++ )
+						{
+							UVVert tv = mesh->mapVerts( mp )[i];
+							fwprintf( pStream, L"%s\t\t\t%s %d\t%s\n", indent.data(), ID_MESH_TVERT, i, Format( tv ).data() );
+						}
+						fwprintf( pStream, L"%s\t\t}\n", indent.data() );
+
+						fwprintf( pStream, L"%s\t\t%s %d\n", indent.data(), ID_MESH_NUMTVFACES, mesh->getNumFaces() );
+
+						fwprintf( pStream, L"%s\t\t%s {\n", indent.data(), ID_MESH_TFACELIST );
+						for( i = 0; i < mesh->getNumFaces(); i++ )
+						{
+							fwprintf( pStream, L"%s\t\t\t%s %d\t%d\t%d\t%d\n",
+									  indent.data(),
+									  ID_MESH_TFACE, i,
+									  mesh->mapFaces( mp )[i].t[vx1],
+									  mesh->mapFaces( mp )[i].t[vx2],
+									  mesh->mapFaces( mp )[i].t[vx3] );
+						}
+						fwprintf( pStream, L"%s\t\t}\n", indent.data() );
+					}
+					fwprintf( pStream, L"%s\t}\n", indent.data() );
+				}
 			}
 		}
 	}
