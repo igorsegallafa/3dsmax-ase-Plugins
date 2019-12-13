@@ -468,6 +468,8 @@ BOOL AsciiImp::ImportTMAnimation()
 	IKeyControl* posCont = NULL;
 	IKeyControl* rotCont = NULL;
 	IKeyControl* scaleCont = NULL;
+
+	static bool bLinearScale = false;
 	
 	Tab<PosKeeper*> posTable;
 	Tab<RotKeeper*> rotTable;
@@ -620,6 +622,8 @@ BOOL AsciiImp::ImportTMAnimation()
 		}
 		else if (Compare(token, ID_CONTROL_SCALE_LINEAR)) 
 		{
+			bLinearScale = true;
+
 			if (node) 
 			{
 				Control* c = (Control*)CreateInstance(CTRL_SCALE_CLASS_ID, Class_ID(LININTERP_SCALE_CLASS_ID, 0));
@@ -740,7 +744,7 @@ BOOL AsciiImp::ImportTMAnimation()
 			s->easeIn = 0.0f;
 			s->easeOut = 0.0f;
 
-			s->type = kBez;
+			s->type = bLinearScale ? kStd : kBez;
 #else
 			ScaleKeeper* s = new ScaleKeeper;
 			s->t = GetInt();
@@ -825,8 +829,13 @@ BOOL AsciiImp::ImportTMAnimation()
 		}
 		else if (Compare(token, L"{"))
 			level++;
-		else if (Compare(token, L"}"))
+		else if ( Compare( token, L"}" ) )
+		{
 			level--;
+
+			if ( bLinearScale )
+				bLinearScale = false;
+		}
 	} while (level > 0);
 	
 	
@@ -948,6 +957,15 @@ BOOL AsciiImp::ImportTMAnimation()
 				scaleKey.intan = s->inTan;
 				scaleKey.outtan = s->outTan;
 				scaleKey.flags = s->flags;
+
+				//Game Mode?
+				if ( gameMode )
+				{
+					//Set Key Tangents to Linear
+					SetInTanType( scaleKey.flags, BEZKEY_LINEAR );
+					SetOutTanType( scaleKey.flags, BEZKEY_LINEAR );
+				}
+
 				scaleCont->SetKey(i, &scaleKey);
 			}
 			if (s->type == kStd) 
