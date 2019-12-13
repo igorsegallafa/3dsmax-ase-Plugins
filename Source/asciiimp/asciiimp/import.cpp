@@ -30,6 +30,7 @@ Comments:  rjc 29 jun 2000 :  Making changes and upgrades for R3.1
 #include "stdafx.h"
 #include "asciiimp.h"
 
+#define PTIMPORTER_SCALE_BEZIER
 
 #ifdef _DEBUG
 TCHAR prev1Token[512];
@@ -726,6 +727,21 @@ BOOL AsciiImp::ImportTMAnimation()
 		}
 		else if (Compare(token, ID_SCALE_SAMPLE) || Compare(token, ID_SCALE_KEY)) 
 		{
+#ifdef PTIMPORTER_SCALE_BEZIER
+			ScaleKeeper * s = new ScaleKeeper;
+			s->t = GetInt();
+			s->comp = GetPoint3();
+			s->axis = Point3( 0.0f, 0.0f, 0.0f );
+			s->val = 0.0f;
+
+			s->tens = 0.0f;
+			s->cont = 0.0f;
+			s->bias = 0.0f;
+			s->easeIn = 0.0f;
+			s->easeOut = 0.0f;
+
+			s->type = kBez;
+#else
 			ScaleKeeper* s = new ScaleKeeper;
 			s->t = GetInt();
 			s->comp = GetPoint3();
@@ -739,11 +755,26 @@ BOOL AsciiImp::ImportTMAnimation()
 			s->easeOut = 0.0f;
 			
 			s->type = kTCB;
-			
+#endif
 			scaleTable.Append(1, &s, 5);
 		}
 		else if (Compare(token, ID_TCB_SCALE_KEY)) 
 		{
+#ifdef PTIMPORTER_SCALE_BEZIER
+			ScaleKeeper * s = new ScaleKeeper;
+			s->t = GetInt();
+			s->comp = GetPoint3();
+			s->axis = Point3( 0.0f, 0.0f, 0.0f );
+			s->val = 0.0f;
+
+			s->tens = 0.0f;
+			s->cont = 0.0f;
+			s->bias = 0.0f;
+			s->easeIn = 0.0f;
+			s->easeOut = 0.0f;
+
+			s->type = kBez;
+#else
 			ScaleKeeper* s = new ScaleKeeper;
 			s->t = GetInt();
 			s->comp = GetPoint3();
@@ -757,11 +788,27 @@ BOOL AsciiImp::ImportTMAnimation()
 			s->easeOut = GetFloat();
 			
 			s->type = kTCB;
-			
+#endif		
 			scaleTable.Append(1, &s, 5);
+
 		}
 		else if (Compare(token, ID_BEZIER_SCALE_KEY)) 
 		{
+#ifdef PTIMPORTER_SCALE_BEZIER
+			ScaleKeeper * s = new ScaleKeeper;
+			s->t = GetInt();
+			s->comp = GetPoint3();
+			s->axis = Point3( 0.0f, 0.0f, 0.0f );
+			s->val = 0.0f;
+
+			s->tens = 0.0f;
+			s->cont = 0.0f;
+			s->bias = 0.0f;
+			s->easeIn = 0.0f;
+			s->easeOut = 0.0f;
+
+			s->type = kBez;
+#else
 			ScaleKeeper* s = new ScaleKeeper;
 			s->t = GetInt();
 			s->comp = GetPoint3();
@@ -773,7 +820,7 @@ BOOL AsciiImp::ImportTMAnimation()
 			s->flags = GetInt();
 			
 			s->type = kBez;
-			
+#endif			
 			scaleTable.Append(1, &s, 5);
 		}
 		else if (Compare(token, L"{"))
@@ -1738,9 +1785,7 @@ BOOL AsciiImp::ImportGeomObject()
 		}
 		else if (Compare(token, ID_TM_ANIMATION)) 
 		{
-			//Node are not Footsteps? so import.
-			if ( std::wstring(nodeName).find(L"Footsteps") == std::wstring::npos )
-				ImportTMAnimation();
+			ImportTMAnimation();
 		}
 		else if (Compare(token, ID_PHYSIQUE)) 
 		{
