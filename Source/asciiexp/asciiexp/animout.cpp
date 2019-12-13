@@ -106,14 +106,6 @@ void AsciiExp::ExportAnimKeys(INode* node, int indentLevel)
 
 BOOL AsciiExp::CheckForAnimation(INode* node, BOOL& bPos, BOOL& bRot, BOOL& bScale)
 {
-	if ( GetIsGameMode() )
-	{
-		bPos = TRUE;
-		bRot = TRUE;
-		bScale = TRUE;
-		return TRUE;
-	}
-
 	TimeValue start = ip->GetAnimRange().Start();
 	TimeValue end = ip->GetAnimRange().End();
 	TimeValue t;
@@ -183,7 +175,7 @@ void AsciiExp::DumpPosSample(INode* node, int indentLevel)
 {	
 	TSTR indent = GetIndent(indentLevel);
 	
-	fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), ID_POS_TRACK);
+	fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), GetIsGameMode() ? ID_CONTROL_POS_LINEAR : ID_POS_TRACK);
 
 	TimeValue start = ip->GetAnimRange().Start();
 	TimeValue end = ip->GetAnimRange().End();
@@ -209,7 +201,7 @@ void AsciiExp::DumpPosSample(INode* node, int indentLevel)
 		// Output the sample
 		fwprintf(pStream, L"%s\t\t\t%s %d\t%s\n",
 			indent.data(),
-			ID_POS_SAMPLE,
+			GetIsGameMode() ? ID_POS_KEY : ID_POS_SAMPLE,
 			t,
 			Format(pos).data());
 	}
@@ -264,7 +256,7 @@ void AsciiExp::DumpScaleSample(INode* node, int indentLevel)
 {	
 	TSTR indent = GetIndent(indentLevel);
 	
-	fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), ID_SCALE_TRACK);
+	fwprintf(pStream,L"%s\t\t%s {\n", indent.data(), GetIsGameMode() ? ID_CONTROL_SCALE_LINEAR : ID_SCALE_TRACK );
 
 	TimeValue start = ip->GetAnimRange().Start();
 	TimeValue end = ip->GetAnimRange().End();
@@ -278,20 +270,14 @@ void AsciiExp::DumpScaleSample(INode* node, int indentLevel)
 		tm = node->GetNodeTM(t) * Inverse(node->GetParentTM(t));
 		decomp_affine(tm, &ap);
 
-		if (t!= start && EqualPoint3(ap.k, prevFac)) {
-			// Skip identical keys 
-			continue;
-		}
-
 		prevFac = ap.k;
 
 		// Output the sample
-		fwprintf(pStream,L"%s\t\t\t%s %d\t%s %s\n",
+		fwprintf(pStream,L"%s\t\t\t%s %d\t%s\n",
 			indent.data(),
-			ID_SCALE_SAMPLE,
+		  GetIsGameMode() ? ID_SCALE_KEY : ID_SCALE_SAMPLE,
 			t,
-			Format(ap.k).data(),
-			Format(ap.u).data() );
+			Format(ap.k).data() );
 	}
 
 	fwprintf(pStream,L"%s\t\t}\n", indent.data());

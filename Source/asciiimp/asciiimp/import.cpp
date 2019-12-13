@@ -469,8 +469,9 @@ BOOL AsciiImp::ImportTMAnimation()
 	IKeyControl* rotCont = NULL;
 	IKeyControl* scaleCont = NULL;
 
+	static bool bLinearPosition = false;
 	static bool bLinearScale = false;
-	
+
 	Tab<PosKeeper*> posTable;
 	Tab<RotKeeper*> rotTable;
 	Tab<ScaleKeeper*> scaleTable;
@@ -513,9 +514,10 @@ BOOL AsciiImp::ImportTMAnimation()
 		}
 		else if (Compare(token, ID_CONTROL_POS_LINEAR)) 
 		{
+			bLinearPosition = true;
+
 			if (node) 
-			{
-				
+			{				
 				Control* c = (Control*)CreateInstance(CTRL_POSITION_CLASS_ID, Class_ID(LININTERP_POSITION_CLASS_ID, 0));
 				node->GetTMController()->SetPositionController(c);
 				if (c) 
@@ -527,9 +529,10 @@ BOOL AsciiImp::ImportTMAnimation()
 		// Create a Bezier position controller for sampled keys
 		else if (Compare(token, ID_POS_TRACK)) 
 		{
+			bLinearPosition = gameMode ? true : false;
 			if (node) 
 			{
-				Control* c = (Control*)CreateInstance(CTRL_POSITION_CLASS_ID, Class_ID(HYBRIDINTERP_POSITION_CLASS_ID, 0));
+				Control* c = (Control*)CreateInstance(CTRL_POSITION_CLASS_ID, Class_ID( gameMode ? LININTERP_POSITION_CLASS_ID : HYBRIDINTERP_POSITION_CLASS_ID, 0));
 				node->GetTMController()->SetPositionController(c);
 				if (c) 
 				{
@@ -637,9 +640,10 @@ BOOL AsciiImp::ImportTMAnimation()
 		// Create a Bezier scale controller for sampled keys
 		else if (Compare(token, ID_SCALE_TRACK)) 
 		{
+			bLinearScale = gameMode ? true : false;
 			if (node) 
 			{
-				Control* c = (Control*)CreateInstance(CTRL_SCALE_CLASS_ID, Class_ID(HYBRIDINTERP_SCALE_CLASS_ID, 0));
+				Control* c = (Control*)CreateInstance(CTRL_SCALE_CLASS_ID, Class_ID( gameMode ? LININTERP_SCALE_CLASS_ID : HYBRIDINTERP_SCALE_CLASS_ID, 0));
 				node->GetTMController()->SetScaleController(c);
 				if (c) 
 				{
@@ -663,7 +667,7 @@ BOOL AsciiImp::ImportTMAnimation()
 			p->outTan = p->val;
 			p->flags = 0;
 			
-			p->type = kBez;
+			p->type = bLinearPosition ? kStd : kBez;
 			
 			posTable.Append(1, &p, 5);
 		}
@@ -835,6 +839,9 @@ BOOL AsciiImp::ImportTMAnimation()
 
 			if ( bLinearScale )
 				bLinearScale = false;
+
+			if ( bLinearPosition )
+				bLinearPosition = false;
 		}
 	} while (level > 0);
 	
