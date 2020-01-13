@@ -110,6 +110,7 @@ AsciiExp::AsciiExp()
 	bIncludePhysique = TRUE;
 	bIncludePhysiqueAsSkin = TRUE;
 	bGameMode = FALSE;
+	bBakeObjects = FALSE;
 	bLightningMap = FALSE;
 	bIncludeNormals  =  FALSE;
 	bIncludeTextureCoords = FALSE;
@@ -592,6 +593,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		CheckDlgButton(hWnd, IDC_PHYSIQUE, exp->GetIncludePhysique()); 
 		CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, exp->GetIncludePhysiqueAsSkin() );
 		CheckDlgButton( hWnd, IDC_GAMEMODE, exp->GetIsGameMode() );
+		CheckDlgButton( hWnd, IDC_BAKE_OBJS, exp->GetBakeObjects() );
 		CheckDlgButton(hWnd, IDC_NORMALS,  exp->GetIncludeNormals());
 		CheckDlgButton(hWnd, IDC_TEXCOORDS,exp->GetIncludeTextureCoords()); 
 		CheckDlgButton(hWnd, IDC_VERTEXCOLORS,exp->GetIncludeVertexColors()); 
@@ -678,6 +680,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
 					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
 					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
+					CheckDlgButton( hWnd, IDC_BAKE_OBJS, FALSE );
 					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
 					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
 					CheckDlgButton( hWnd, IDC_VERTEXCOLORS, FALSE );
@@ -701,6 +704,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
 					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
 					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
+					CheckDlgButton( hWnd, IDC_BAKE_OBJS, FALSE );
 					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
 					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
 					CheckDlgButton( hWnd, IDC_VERTEXCOLORS, TRUE );
@@ -736,6 +740,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 			exp->SetIncludePhysique(IsDlgButtonChecked(hWnd, IDC_PHYSIQUE)); 
 			exp->SetIncludePhysiqueAsSkin( IsDlgButtonChecked( hWnd, IDC_PHYSIQUEASSKIN ) );
 			exp->SetGameMode( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
+			exp->SetBakeObjects( IsDlgButtonChecked( hWnd, IDC_BAKE_OBJS ) );
 			exp->SetIncludeNormals(IsDlgButtonChecked(hWnd, IDC_NORMALS));
 			exp->SetIncludeTextureCoords(IsDlgButtonChecked(hWnd, IDC_TEXCOORDS)); 
 			exp->SetIncludeVertexColors(IsDlgButtonChecked(hWnd, IDC_VERTEXCOLORS)); 
@@ -782,6 +787,68 @@ DWORD WINAPI fn(LPVOID arg)
 	return(0);
 }
 
+void BakeObjectTransformation()
+{
+	std::wstring strText = _T( R"PROG(
+
+fn OrgControl PTSel=
+(
+	fStart = animationRange.start
+	fEnd = animationRange.end
+	MyP = point()
+	MyP.name = "masterJoe"
+	CNT=copy $masterJoe
+	CNT.wireColor=[255,0,0]
+	--PTSel.name = CNT.name + "_Baked"
+	--CNT.name = PTSel.name + "_Baked"
+	---------------------------------------------------------------
+	 for i = fStart to fEnd do  
+     ( 
+          animate on 
+          ( 
+               at time i 
+               ( 
+                  CNT.transform = PTSel.transform  				 
+			    )
+			)
+		)
+		 PTSel.parent = undefined
+		 PTSel.name = PTSel.name
+		 PTSel.pos.controller = bezier_position ()
+		 PTSel.pos.controller = Position_XYZ ()
+		 PTSel.rotation.controller = tcb_rotation ()
+		 PTSel.rotation.controller = Euler_XYZ ()
+		 PTSel.scale.controller = bezier_scale ()
+		 PTSel.scale.controller = ScaleXYZ ()
+		 
+		 for w = fStart to fEnd do   
+     ( 
+		
+          animate on 
+          ( 
+               at time w 
+               ( 
+                  PTSel.transform = CNT.transform  				 
+			    )
+			)
+		)	
+	delete MyP	
+	delete CNT
+)
+
+allObjects = $*
+
+nodes = for o in allObjects where (matchPattern o.name pattern:("Bip01*")) collect ( o )
+
+max create mode
+for x in nodes do (OrgControl x)
+		
+
+)PROG" );
+
+	ExecuteMAXScriptScript( strText.c_str() );
+}
+
 // Start the exporter!
 // This is the real entrypoint to the exporter. After the user has selected
 // the filename (and he's prompted for overwrite etc.) this method is called.
@@ -804,6 +871,9 @@ int AsciiExp::DoExport(const TCHAR *name,ExpInterface *ei,Interface *i, BOOL sup
 			return 1;
 			}
 		}
+
+	if ( GetBakeObjects() )
+		BakeObjectTransformation();
 	
 	swprintf(szFmtStr, L"%%4.%df", nPrecision);
 

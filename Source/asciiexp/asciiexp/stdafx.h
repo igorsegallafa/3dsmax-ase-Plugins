@@ -33,6 +33,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <vector>
 
 //Convert Char to WChar
 const wchar_t *GetWC( const char *c );

@@ -33,6 +33,9 @@
 
 #include "utilapi.h"
 
+#include <maxscript/maxscript.h>
+
+
 extern ClassDesc* GetAsciiExpDesc();
 extern TCHAR *GetString(int id);
 extern HINSTANCE hInstance;
@@ -157,6 +160,7 @@ public:
 	inline BOOL	GetIncludePhysique()		{ return bIncludePhysique; }
 	inline BOOL	GetIncludePhysiqueAsSkin()  { return bIncludePhysiqueAsSkin; }
 	inline BOOL	GetIsGameMode()				{ return bGameMode; }
+	inline BOOL	GetBakeObjects()			{ return bBakeObjects; }
 	inline BOOL	GetIsLightningMap()			{ return bLightningMap; }
 	inline BOOL	GetIncludeNormals()			{ return bIncludeNormals; }
 	inline BOOL	GetIncludeTextureCoords()	{ return bIncludeTextureCoords; }
@@ -183,6 +187,7 @@ public:
 	inline void	SetIncludePhysique(BOOL val)		{ bIncludePhysique = val; }
 	inline void	SetIncludePhysiqueAsSkin( BOOL val ){ bIncludePhysiqueAsSkin = val; }
 	inline void	SetGameMode( BOOL val )				{ bGameMode = val; }
+	inline void	SetBakeObjects( BOOL val )				{ bBakeObjects = val; }
 	inline void	SetLightningMap( BOOL val )			{ bLightningMap = val; }
 	inline void	SetIncludeNormals(BOOL val)			{ bIncludeNormals = val; }
 	inline void	SetIncludeTextureCoords(BOOL val)	{ bIncludeTextureCoords = val; }
@@ -208,6 +213,7 @@ private:
 	BOOL	bIncludePhysique;
 	BOOL	bIncludePhysiqueAsSkin;
 	BOOL	bGameMode;
+	BOOL	bBakeObjects;
 	BOOL	bLightningMap;
 	BOOL	bIncludeNormals;
 	BOOL	bIncludeTextureCoords;
