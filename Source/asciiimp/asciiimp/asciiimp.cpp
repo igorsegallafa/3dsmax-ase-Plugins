@@ -103,6 +103,7 @@ BOOL AsciiImp::phys2skin = TRUE;
 BOOL AsciiImp::ignoreInherit = TRUE;
 BOOL AsciiImp::gameMode = TRUE;
 BOOL AsciiImp::autoOpacityMap = FALSE;
+BOOL AsciiImp::forceMappingChannel = FALSE;
 
 AsciiImp::AsciiImp()
 {
@@ -203,6 +204,7 @@ static INT_PTR CALLBACK ImportDlgProc(
 		CheckDlgButton( hWnd, IDC_IGNOREINHERIT, imp->ignoreInherit );
 		CheckDlgButton( hWnd, IDC_GAMEMODE, imp->gameMode );
 		CheckDlgButton( hWnd, IDC_AUTOOPACITYMAP, imp->autoOpacityMap );
+		CheckDlgButton( hWnd, IDC_AUTOOPACITYMAP2, imp->forceMappingChannel );
 
 		break;
 	case WM_COMMAND:
@@ -213,6 +215,7 @@ static INT_PTR CALLBACK ImportDlgProc(
 			imp->ignoreInherit = IsDlgButtonChecked( hWnd, IDC_IGNOREINHERIT );
 			imp->gameMode = IsDlgButtonChecked( hWnd, IDC_GAMEMODE );
 			imp->autoOpacityMap = IsDlgButtonChecked( hWnd, IDC_AUTOOPACITYMAP );
+			imp->forceMappingChannel = IsDlgButtonChecked( hWnd, IDC_AUTOOPACITYMAP2 );
 
 			EndDialog(hWnd, 1);
 			break;

@@ -197,6 +197,7 @@ public:
 	static BOOL ignoreInherit;
 	static BOOL gameMode;
 	static BOOL autoOpacityMap;
+	static BOOL forceMappingChannel;
 private:
 	std::wstring	fileName;
 	std::wstring	baseFilePath;

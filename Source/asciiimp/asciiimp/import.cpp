@@ -2677,6 +2677,11 @@ BOOL AsciiImp::GetStandardMtl(Mtl*& mtl)
 			float amount = 0.0f;
 			Texmap* tex = GetTexture(amount);
 			if (tex) {
+				BitmapTex* bitmapTex = (BitmapTex*)tex;
+
+				if( bitmapTex->GetUVGen() && forceMappingChannel )
+					bitmapTex->GetUVGen()->SetMapChannel( 2 );
+
 				stdMtl->SetSubTexmap(ID_SI, tex);
 				stdMtl->SetTexmapAmt(ID_SI, amount, 0);
 				stdMtl->EnableMap(ID_SI, TRUE);
