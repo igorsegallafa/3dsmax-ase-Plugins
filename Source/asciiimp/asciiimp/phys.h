@@ -8,15 +8,15 @@ public:
 	Phys( INode * _node, int _numVertex );
 	~Phys();
 
-	void AddBone( size_t numVertex, string boneName );
+	void AddBone( size_t numVertex, string boneName, float fWeight = 1.0f );
 
 	INode * GetNode() { return node; }
 
-	vector<string> GetBonesNames() { return bonesNames; }
+	vector<std::pair<string, float>> GetBonesNames() { return bonesNames; }
 
 protected:
 	INode * node;
 	int numVertex;
 
-	vector<string> bonesNames;
+	vector<std::pair<string, float>> bonesNames;
 };

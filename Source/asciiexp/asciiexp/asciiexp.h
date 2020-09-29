@@ -64,8 +64,10 @@ public:
 	Modifier * FindSkinModifier(INode *pNode);
 	Modifier * FindPhysiqueModifier(INode *pNode);
 	
-	void ExportPhysiqueDataFromSkin(INode *pNode, Modifier *pMod, int indentLevel);
-	void ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel);
+    void ExportPhysiqueDataFromSkin( INode * pNode, Modifier * pMod, int indentLevel );
+    void ExportPhysiqueDataFromSkinNew( INode * pNode, Modifier * pMod, int indentLevel );
+    void ExportPhysiqueData( INode * pNode, Modifier * pMod, int indentLevel );
+    void ExportPhysiqueDataNew( INode * pNode, Modifier * pMod, int indentLevel );
 
 	// SceneExport methods
 	int    ExtCount();     // Number of extensions supported 

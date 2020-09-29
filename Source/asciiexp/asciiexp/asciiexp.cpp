@@ -352,6 +352,54 @@ void AsciiExp::ExportPhysiqueDataFromSkin(INode *pNode, Modifier *pMod, int inde
 
 	fwprintf(pStream,L"%s}\n",indent.data());
 }
+void AsciiExp::ExportPhysiqueDataFromSkinNew( INode * pNode, Modifier * pMod, int indentLevel )
+{
+    TSTR indent;
+    indent = GetIndent( indentLevel + 1 );
+
+    ISkin * skin = (ISkin *)pMod->GetInterface( I_SKIN );
+
+    ISkinContextData * skin_data = (ISkinContextData *)skin->GetContextInterface( pNode );
+
+    Object * obj = pNode->EvalWorldState( ip->GetTime() ).obj;
+
+    TriObject * tri = (TriObject *)obj->ConvertToType( ip->GetTime(), Class_ID( TRIOBJ_CLASS_ID, 0 ) );
+    Mesh * mesh = &tri->GetMesh();
+
+    int numverts = mesh->numVerts;
+
+    fwprintf( pStream, L"%s%s {\n", indent.data(), ID_PHYSIQUE );
+    fwprintf( pStream, L"%s\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_VERTASSINE, skin_data->GetNumPoints() );
+
+    for ( int i = 0; i < numverts; i++ )
+    {
+        float totalWeight = 0.0f, weight = 0.0f;
+        TSTR nodeName;
+
+        int numWeights = skin_data->GetNumAssignedBones( i );
+
+        fwprintf( pStream, L"%s\t%s %d {\n", indent.data(), ID_PHYSIQUE_BLEND_RIGID, i );
+        fwprintf( pStream, L"%s\t\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_NODASSINE, numWeights );
+        fwprintf( pStream, L"%s\t\t%s {\n", indent.data(), ID_PHYSIQUE_NODE_LIST );
+
+        for ( int j = 0; j < numWeights; j++ )
+        {
+            INode * pBone = skin->GetBone( skin_data->GetAssignedBone( i, j ) );
+            weight = skin_data->GetBoneWeight( i, j );
+            if ( weight == 0.000000 ) continue;
+            nodeName = pBone->GetName();
+
+			fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, weight, nodeName );
+        }
+
+        fwprintf( pStream, L"%s\t\t}\n", indent.data() );
+        fwprintf( pStream, L"%s\t}\n", indent.data() );
+    }
+	fwprintf( pStream, L"\t}\n" );
+    pMod->ReleaseInterface( I_SKIN, skin );
+}
+
+
 
 void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
 {
@@ -492,6 +540,7 @@ void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
 	
 	fwprintf(pStream,L"%s}\n",indent.data());
 }
+
 
 int AsciiExp::ExtCount()
 {
