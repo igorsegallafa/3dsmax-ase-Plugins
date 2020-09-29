@@ -152,13 +152,20 @@ void AsciiExp::ExportGeomObject(INode* node, int indentLevel)
 		if (GetIncludePhysiqueAsSkin()) {
 			Modifier* pMod = FindSkinModifier(node);
 			if(pMod) {
-				ExportPhysiqueDataFromSkinNew(node, pMod, indentLevel);
+                if ( GetIsBlendWeight() )
+                    ExportPhysiqueDataFromSkinNew( node, pMod, indentLevel );
+				else
+					ExportPhysiqueDataFromSkin( node, pMod, indentLevel );
 			}
 		}
 		else {
 			Modifier* pMod = FindPhysiqueModifier(node);
 			if(pMod) {
-				ExportPhysiqueData(node, pMod, indentLevel);
+
+				if ( GetIsBlendWeight() )
+					ExportPhysiqueDataNew(node, pMod, indentLevel);
+				else
+					ExportPhysiqueData( node, pMod, indentLevel );
 			}
 		}
 	}
