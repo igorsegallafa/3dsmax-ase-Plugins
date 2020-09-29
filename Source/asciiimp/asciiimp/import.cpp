@@ -1208,25 +1208,29 @@ void AsciiImp::FinalizePhysique()
 					for( UINT j = 0; j < bonesNames.size(); j++ )
 					{
 						int numVertex = j;
-						string boneName = bonesNames[j].first;
 
-						//Now we can get the bone node since we already gone through each geomobject..
-						INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ));
-						if(pBoneNode)
+						for ( auto & v : bonesNames[j] )
 						{
-							bool exists = false;
+							string boneName = v.first;
 
-							for( int z = 0; z < bones.Count(); z++ )
+							//Now we can get the bone node since we already gone through each geom object..
+							INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ) );
+							if ( pBoneNode )
 							{
-								if( bones[z] == pBoneNode )
-									exists = true;
-							}
+								bool exists = false;
 
-							if( !exists )
-								bones.Append( 1, &pBoneNode );
+								for ( int z = 0; z < bones.Count(); z++ )
+								{
+									if ( bones[z] == pBoneNode )
+										exists = true;
+								}
+
+								if ( !exists )
+									bones.Append( 1, &pBoneNode );
+							}
+							else
+								ERRORBOX( "Phys 2 Skin ERROR [1]: Bone %s not found!", boneName.c_str() );
 						}
-						else
-							ERRORBOX( "Phys 2 Skin ERROR [1]: Bone %s not found!", boneName.c_str() );
 					}
 
 					for( int i = 0; i < bones.Count(); i++ )
@@ -1250,24 +1254,28 @@ void AsciiImp::FinalizePhysique()
 						der_obj->Eval( 0, 0 );
 						
 						int numVertex = j;
-						auto boneName = bonesNames[j];
-						
-						//Now we can get the bone node since we already gone through each geomobject..
-						INode * pBoneNode = GetNodeByName( GetWC( boneName.first.c_str()) );
-						if(pBoneNode)
+
+                        Tab<INode *> boneImp;
+                        Tab<float> weightImp;
+
+						for ( auto & v : bonesNames[j] )
 						{
-							Tab<INode*> boneImp;
-							Tab<float> weightImp;
+							auto boneName = v.first;
 
-							boneImp.Append( 1, &pBoneNode );
-							float fWeight = boneName.second;
-							weightImp.Append( 1, &fWeight );
-
-							if( !skinImp->AddWeights( pNode, numVertex, boneImp, weightImp ) )
-								ERRORBOX( "AddWeights failed for vertex # %d [Node: %s]", numVertex, pNode->GetName() );
+							//Now we can get the bone node since we already gone through each geomobject..
+							INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ) );
+							if ( pBoneNode )
+							{
+								boneImp.Append( 1, &pBoneNode );
+								float fWeight = v.second;
+								weightImp.Append( 1, &fWeight );
+							}
+							else
+								ERRORBOX( "Phys 2 Skin ERROR [2]: Bone %s not found!", boneName.c_str() );
 						}
-						else
-							ERRORBOX( "Phys 2 Skin ERROR [2]: Bone %s not found!", boneName.first.c_str() );
+
+                        if ( !skinImp->AddWeights( pNode, numVertex, boneImp, weightImp ) )
+                            ERRORBOX( "AddWeights failed for vertex # %d [Node: %s]", numVertex, pNode->GetName() );
 					}
 				}
 				else
@@ -1296,7 +1304,7 @@ void AsciiImp::FinalizePhysique()
 						auto boneName = bonesNames[numVertex];
 
 						//Now we can get the bone node since we already gone through each geomobject..
-						INode * pBoneNode = GetNodeByName(GetWC(boneName.first.c_str()));
+						INode * pBoneNode = GetNodeByName(GetWC(boneName[0].first.c_str()));
 						if(pBoneNode)
 						{
 							IPhyVertexImport * vertImp = phyContImp->SetVertexInterface(numVertex,RIGID_NON_BLENDED_TYPE);
@@ -1313,7 +1321,7 @@ void AsciiImp::FinalizePhysique()
 							phyContImp->ReleaseVertexInterface(vertImp);
 						}
 						else
-							ERRORBOX( "Physique ERROR: Bone %s not found!", boneName.first.c_str() );
+							ERRORBOX( "Physique ERROR: Bone %s not found!", boneName[0].first.c_str() );
 					}
 
 					phyImp->ReleaseContextInterface(phyContImp);

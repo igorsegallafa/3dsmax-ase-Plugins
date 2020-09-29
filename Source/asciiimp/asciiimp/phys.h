@@ -12,11 +12,11 @@ public:
 
 	INode * GetNode() { return node; }
 
-	vector<std::pair<string, float>> GetBonesNames() { return bonesNames; }
+	std::vector<std::vector<std::pair<string, float>>> GetBonesNames() { return bonesNames; }
 
 protected:
 	INode * node;
 	int numVertex;
 
-	vector<std::pair<string, float>> bonesNames;
+	std::vector<std::vector<std::pair<string, float>>> bonesNames;
 };

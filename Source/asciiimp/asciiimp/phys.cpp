@@ -20,5 +20,5 @@ void Phys::AddBone( size_t numVertex, string boneName, float fWeight )
 	if( numVertex < 0 || numVertex >= size )
 		return;
 
-	bonesNames[numVertex] = make_pair( boneName, fWeight );
+	bonesNames[numVertex].push_back( make_pair( boneName, fWeight ) );
 }
