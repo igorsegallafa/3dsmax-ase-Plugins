@@ -643,7 +643,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		CheckDlgButton(hWnd, IDC_PHYSIQUE, exp->GetIncludePhysique()); 
 		CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, exp->GetIncludePhysiqueAsSkin() );
 		CheckDlgButton( hWnd, IDC_GAMEMODE, exp->GetIsGameMode() );
-		CheckDlgButton( hWnd, IDC_BLENDING_PHYSIQUE, exp->GetIsGameMode() );
+		CheckDlgButton( hWnd, IDC_BLENDING_PHYSIQUE, exp->GetIsBlendWeight() );
 		CheckDlgButton( hWnd, IDC_BAKE_OBJS, exp->GetBakeObjects() );
 		CheckDlgButton(hWnd, IDC_NORMALS,  exp->GetIncludeNormals());
 		CheckDlgButton(hWnd, IDC_TEXCOORDS,exp->GetIncludeTextureCoords()); 
@@ -793,7 +793,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 			exp->SetIncludePhysique(IsDlgButtonChecked(hWnd, IDC_PHYSIQUE)); 
 			exp->SetIncludePhysiqueAsSkin( IsDlgButtonChecked( hWnd, IDC_PHYSIQUEASSKIN ) );
             exp->SetGameMode( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
-            exp->SetBlendWeight( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
+            exp->SetBlendWeight( IsDlgButtonChecked( hWnd, IDC_BLENDING_PHYSIQUE ) );
 			exp->SetBakeObjects( IsDlgButtonChecked( hWnd, IDC_BAKE_OBJS ) );
 			exp->SetIncludeNormals(IsDlgButtonChecked(hWnd, IDC_NORMALS));
 			exp->SetIncludeTextureCoords(IsDlgButtonChecked(hWnd, IDC_TEXCOORDS)); 
