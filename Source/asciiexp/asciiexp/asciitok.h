@@ -313,7 +313,8 @@
 #define ID_MAP_BUMP				_T("*MAP_BUMP")
 #define ID_MAP_REFLECT			_T("*MAP_REFLECT") 
 #define ID_MAP_REFRACT			_T("*MAP_REFRACT")
-								
+#define ID_MAP_DISPLACEMENT		_T("*MAP_DISPLACEMENT")
+
 // TM related ID's				
 #define ID_TM_ROW0				_T("*TM_ROW0") 
 #define ID_TM_ROW1				_T("*TM_ROW1") 

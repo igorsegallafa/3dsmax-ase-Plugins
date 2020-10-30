@@ -383,15 +383,49 @@ void AsciiExp::ExportPhysiqueDataFromSkinNew( INode * pNode, Modifier * pMod, in
         fwprintf( pStream, L"%s\t\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_NODASSINE, numWeights );
         fwprintf( pStream, L"%s\t\t%s {\n", indent.data(), ID_PHYSIQUE_NODE_LIST );
 
+
+		struct BoneBiggestWeight
+		{
+			int iIndex;
+			std::wstring strBoneName;
+			float fWeight;
+
+
+			BoneBiggestWeight( int idx, std::wstring strname, float fw )
+			{
+				strBoneName = strname;
+				fWeight = fw;
+				iIndex = idx;
+			};
+
+			BoneBiggestWeight() {};
+			~BoneBiggestWeight() {};
+		};
+
+		std::vector<BoneBiggestWeight> vWeights;
+
         for ( int j = 0; j < numWeights; j++ )
         {
-            INode * pBone = skin->GetBone( skin_data->GetAssignedBone( i, j ) );
+			int iBoneIndex = skin_data->GetAssignedBone( i, j );
+            INode * pBone = skin->GetBone( iBoneIndex );
             weight = skin_data->GetBoneWeight( i, j );
             if ( weight == 0.000000 ) continue;
             nodeName = pBone->GetName();
 
-			fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, weight, nodeName );
+			vWeights.push_back( BoneBiggestWeight( iBoneIndex, std::wstring(nodeName), weight ) );
+
+			//fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, weight, nodeName );
         }
+
+		/*
+        std::sort( vWeights.begin(), vWeights.end(),
+                   []( const BoneBiggestWeight & a, const BoneBiggestWeight & b ) -> bool
+        {
+            return a.fWeight > b.fWeight;
+        } );
+		*/
+		for ( size_t j = 0; j < vWeights.size(); j++ )
+			fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, vWeights[j].fWeight, vWeights[j].strBoneName.c_str() );
 
         fwprintf( pStream, L"%s\t\t}\n", indent.data() );
         fwprintf( pStream, L"%s\t}\n", indent.data() );

@@ -1355,6 +1355,7 @@ BOOL AsciiImp::GetVertexList(TriObject* tri)
 		{
 			int vxNo = GetInt();
 			Point3 vx = GetPoint3();
+
 			tri->mesh.setVert(vxNo, vx);
 		}
 	} while (!done);

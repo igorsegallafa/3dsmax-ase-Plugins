@@ -1244,7 +1244,8 @@ TCHAR* AsciiExp::GetMapID(Class_ID cid, int subNo)
 		case ID_FI: lstrcpyW(buf, ID_MAP_FILTERCOLOR); break;
 		case ID_BU: lstrcpyW(buf, ID_MAP_BUMP); break;
 		case ID_RL: lstrcpyW(buf, ID_MAP_REFLECT); break;
-		case ID_RR: lstrcpyW(buf, ID_MAP_REFRACT); break;
+		case ID_RR: lstrcpyW( buf, ID_MAP_REFRACT ); break;
+		case ID_DP: lstrcpyW( buf, ID_MAP_DISPLACEMENT ); break;
 		}
 	}
 	else {
@@ -1544,9 +1545,9 @@ void AsciiExp::ExportPhysiqueDataNew( INode * pNode, Modifier * pMod, int indent
 
 						totalWeight += weight;
 						fwprintf( pStream, L"%s\t\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, x, normalizedWeight, nodeName );
-						fwprintf( pStream, L"%s\t\t\t\t*OFFSET %s\n", indent.data(), Format( offsetVector ) );
+//						fwprintf( pStream, L"%s\t\t\t\t*OFFSET %s\n", indent.data(), Format( offsetVector ) );
 					}
-					fwprintf( pStream, L"%s\t\t\t\t*TMCOOR %s\n", indent.data(), Format( bindVector ) );
+//					fwprintf( pStream, L"%s\t\t\t\t*TMCOOR %s\n", indent.data(), Format( bindVector ) );
 					fwprintf( pStream, L"%s\t\t\t}\n", indent.data() );
 				}
 				fwprintf( pStream, L"%s\t\t}\n", indent.data() );
