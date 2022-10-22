@@ -1,10 +1,11 @@
 # 3dsmax-ase-Plugins
-This Import and Exporter for ASE files has been modified to work with Priston Tale.
+This Import and Exporter Plugin for 3DS Max for ASE files has been modified to work with Priston Tale.
 
 
 ------------
 
 ### Modifications
+- Added support for new 3DS Max versions
 - Self Illumination on Maps
 - Added Linear Keys for Animation (Game Mode)
 - Added New Animation Physique for the new PT Characters
