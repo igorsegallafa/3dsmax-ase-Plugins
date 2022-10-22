@@ -1,5 +1,5 @@
 # 3dsmax-ase-Plugins
-This Import and Exporter Plugin for 3DS Max for ASE files has been modified to work with Priston Tale.
+These Import and Exporter Plugins for 3DS Max for ASE files has been modified to work with Priston Tale.
 
 
 ------------
