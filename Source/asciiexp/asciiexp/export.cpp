@@ -152,20 +152,13 @@ void AsciiExp::ExportGeomObject(INode* node, int indentLevel)
 		if (GetIncludePhysiqueAsSkin()) {
 			Modifier* pMod = FindSkinModifier(node);
 			if(pMod) {
-                if ( GetIsBlendWeight() )
-                    ExportPhysiqueDataFromSkinNew( node, pMod, indentLevel );
-				else
-					ExportPhysiqueDataFromSkin( node, pMod, indentLevel );
+				ExportPhysiqueDataFromSkin(node, pMod, indentLevel);
 			}
 		}
 		else {
 			Modifier* pMod = FindPhysiqueModifier(node);
 			if(pMod) {
-
-				if ( GetIsBlendWeight() )
-					ExportPhysiqueDataNew(node, pMod, indentLevel);
-				else
-					ExportPhysiqueData( node, pMod, indentLevel );
+				ExportPhysiqueData(node, pMod, indentLevel);
 			}
 		}
 	}
@@ -1244,8 +1237,7 @@ TCHAR* AsciiExp::GetMapID(Class_ID cid, int subNo)
 		case ID_FI: lstrcpyW(buf, ID_MAP_FILTERCOLOR); break;
 		case ID_BU: lstrcpyW(buf, ID_MAP_BUMP); break;
 		case ID_RL: lstrcpyW(buf, ID_MAP_REFLECT); break;
-		case ID_RR: lstrcpyW( buf, ID_MAP_REFRACT ); break;
-		case ID_DP: lstrcpyW( buf, ID_MAP_DISPLACEMENT ); break;
+		case ID_RR: lstrcpyW(buf, ID_MAP_REFRACT); break;
 		}
 	}
 	else {
@@ -1458,156 +1450,6 @@ void AsciiExp::DumpMatrix3(Matrix3* m, Matrix3* m2, int indentLevel)
 	fwprintf( pStream, L"%s%s %s\n", indent.data(), ID_TM_SCALE, Format( ap.k ).data() );
 	fwprintf( pStream, L"%s%s %s\n", indent.data(), ID_TM_SCALEAXIS, Format( scaleAxis ).data() );
 	fwprintf( pStream, L"%s%s %s\n", indent.data(), ID_TM_SCALEAXISANG, Format( scaleAxAngle ).data() );
-}
-
-void AsciiExp::ExportPhysiqueDataNew( INode * pNode, Modifier * pMod, int indentLevel )
-{
-	//**************************************************************************
-	//Get the data from the physique interface
-	//**************************************************************************
-
-	TSTR indent;
-	indent = GetIndent( indentLevel + 1 );
-
-	//get a pointer to the export interface
-	IPhysiqueExport * phyExport = (IPhysiqueExport *)pMod->GetInterface( I_PHYEXPORT );
-
-	//get the physique version number.
-	//If the version number is > 30 you may have float ing bones
-	int ver = phyExport->Version();
-
-	//get a pointer to the export context interface
-	IPhyContextExport * mcExport = (IPhyContextExport *)phyExport->GetContextInterface( pNode );
-
-	//convert to rigid for time independent vertex assignment
-	mcExport->ConvertToRigid( true );
-
-	//allow blending to export multi-link assignments
-	mcExport->AllowBlending( true );
-
-	int x = 0;
-	float normalizedWeight;
-
-	//thesearethedifferenttypesofrigidverticessupported
-	IPhyBlendedRigidVertex * rb_vtx;
-	IPhyRigidVertex * r_vtx;
-
-	//getthevertexcountfromtheexportinterface
-	int numverts = mcExport->GetNumberVertices();
-
-	//writeheaderandnumberofvertexcount
-	fwprintf( pStream, L"%s%s {\n", indent.data(), ID_PHYSIQUE );
-	fwprintf( pStream, L"%s\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_VERTASSINE, numverts );
-	fwprintf( pStream, L"%s\t%s {\n", indent.data(), ID_PHYSIQUE_VERT_LIST );
-
-	//gatherthevertex-linkassignmentdata
-	for ( int i = 0; i < numverts; i++ )
-	{
-		//keeprecordofthetotalboneweightinordertonormalizetheflaotingboneweightslater
-		float totalWeight = 0.0f, weight = 0.0f;
-		Point3 offsetVector, bindVector( 0.0f, 0.0f, 0.0f );
-		TSTR nodeName;
-
-		//Getthehierarchialvertexinterfaceforthisvertex
-		IPhyVertexExport * vi = mcExport->GetVertexInterface( i );//,HIERARCHIAL_VERTEX);
-		if ( vi )
-		{
-
-			//checkthevertextypeandprocessaccordingly
-			int type = vi->GetVertexType();
-			switch ( type )
-			{
-				//wehaveavertexassignedtomorethanonelink
-			case RIGID_BLENDED_TYPE:
-				{
-					//type-castthepNodetotheproperclass
-					rb_vtx = (IPhyBlendedRigidVertex *)vi;
-					int numNode = rb_vtx->GetNumberNodes();
-
-					fwprintf( pStream, L"%s\t\t%s %d {\n", indent.data(), ID_PHYSIQUE_BLEND_RIGID, i );
-					fwprintf( pStream, L"%s\t\t\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_NODASSINE, numNode );
-					fwprintf( pStream, L"%s\t\t\t%s {\n", indent.data(), ID_PHYSIQUE_NODE_LIST );
-
-					//iteratethroughalllinksthisvertexisassignedto
-					for ( x = 0; x < numNode; x++ )
-					{
-						//GetthepNodeanditsnameforexport
-						nodeName = rb_vtx->GetNode( x )->GetName();
-						offsetVector = rb_vtx->GetOffsetVector( x );
-
-						Matrix3 tmp = rb_vtx->GetNode( x )->GetNodeTM( GetStaticFrame() );
-
-						//Getthereturnednormalizedweightforexport.
-						//Usetheweightreferencetokeeptrackofthetotalweight.
-						normalizedWeight = rb_vtx->GetWeight( x );//,&weight;);
-
-						bindVector += (tmp * offsetVector) * normalizedWeight;
-
-						totalWeight += weight;
-						fwprintf( pStream, L"%s\t\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, x, normalizedWeight, nodeName );
-//						fwprintf( pStream, L"%s\t\t\t\t*OFFSET %s\n", indent.data(), Format( offsetVector ) );
-					}
-//					fwprintf( pStream, L"%s\t\t\t\t*TMCOOR %s\n", indent.data(), Format( bindVector ) );
-					fwprintf( pStream, L"%s\t\t\t}\n", indent.data() );
-				}
-				fwprintf( pStream, L"%s\t\t}\n", indent.data() );
-				break;
-				//wehaveavertexassignedtoasinglelink
-			case RIGID_TYPE:
-				//type-castthepNodetotheproperclass
-				r_vtx = (IPhyRigidVertex *)vi;
-
-				//getthepNodeanditsnameforexport
-				INode * pBone = r_vtx->GetNode();
-				nodeName = pBone->GetName();
-				offsetVector = r_vtx->GetOffsetVector();
-
-				Matrix3 tmp = pBone->GetNodeTM( GetStaticFrame() );
-
-				Matrix3 parentTM, nodeTM, localTM;
-				nodeTM = pBone->GetNodeTM( GetStaticFrame() );
-				INode * parent = pBone->GetParentNode();
-				parentTM = parent->GetNodeTM( GetStaticFrame() );
-				localTM = nodeTM * Inverse( parentTM );
-
-				//Decomposethematrixanddumpthecontents
-				AffineParts ap;
-				float rotAngle;
-				Point3 rotAxis;
-				float scaleAxAngle;
-				Point3 scaleAxis;
-
-				decomp_affine( localTM, &ap );
-
-				//Quaternionsaredumpedasangleaxis.
-				AngAxisFromQ( ap.q, &rotAngle, rotAxis );
-				AngAxisFromQ( ap.u, &scaleAxAngle, scaleAxis );
-				/**/
-
-				//theweightis1.0fsinceitisnotblended
-				float NormalizedWeight = 1.0f;
-
-				bindVector += (tmp * offsetVector);
-
-				//addthisvertexweighttotherunningtotal
-				totalWeight += 1.0f;
-				fwprintf( pStream, L"%s\t\t%sLLLLL %d \"%s\"\n", indent.data(), ID_PHYSIQUE_NOBLEND_RIGID, i, nodeName );
-				fwprintf( pStream, L"%s\t\t*TMCOOR %s\n", indent.data(), Format( bindVector ) );
-				fwprintf( pStream, L"%s\t\t*OFFSET %s\n", indent.data(), Format( offsetVector ) );
-				break;
-			}
-			//releasethevertexinterface
-			mcExport->ReleaseVertexInterface( vi );
-		}
-	}
-
-	//releasethecontextinterface
-	phyExport->ReleaseContextInterface( mcExport );
-
-	//Releasethephysiqueinterface
-	pMod->ReleaseInterface( I_PHYINTERFACE, phyExport );
-
-	fwprintf( pStream, L"%s}\n", indent.data() );
 }
 
 // From the SDK

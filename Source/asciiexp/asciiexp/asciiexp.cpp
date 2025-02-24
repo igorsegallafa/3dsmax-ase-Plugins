@@ -111,7 +111,6 @@ AsciiExp::AsciiExp()
 	bIncludePhysique = TRUE;
 	bIncludePhysiqueAsSkin = TRUE;
 	bGameMode = FALSE;
-	bBlendWeight = FALSE;
 	bBakeObjects = FALSE;
 	bLightningMap = FALSE;
 	bIncludeNormals  =  FALSE;
@@ -354,88 +353,6 @@ void AsciiExp::ExportPhysiqueDataFromSkin(INode *pNode, Modifier *pMod, int inde
 
 	fwprintf(pStream,L"%s}\n",indent.data());
 }
-void AsciiExp::ExportPhysiqueDataFromSkinNew( INode * pNode, Modifier * pMod, int indentLevel )
-{
-    TSTR indent;
-    indent = GetIndent( indentLevel + 1 );
-
-    ISkin * skin = (ISkin *)pMod->GetInterface( I_SKIN );
-
-    ISkinContextData * skin_data = (ISkinContextData *)skin->GetContextInterface( pNode );
-
-    Object * obj = pNode->EvalWorldState( ip->GetTime() ).obj;
-
-    TriObject * tri = (TriObject *)obj->ConvertToType( ip->GetTime(), Class_ID( TRIOBJ_CLASS_ID, 0 ) );
-    Mesh * mesh = &tri->GetMesh();
-
-    int numverts = mesh->numVerts;
-
-    fwprintf( pStream, L"%s%s {\n", indent.data(), ID_PHYSIQUE );
-    fwprintf( pStream, L"%s\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_VERTASSINE, skin_data->GetNumPoints() );
-
-    for ( int i = 0; i < numverts; i++ )
-    {
-        float totalWeight = 0.0f, weight = 0.0f;
-        TSTR nodeName;
-
-        int numWeights = skin_data->GetNumAssignedBones( i );
-
-        fwprintf( pStream, L"%s\t%s %d {\n", indent.data(), ID_PHYSIQUE_BLEND_RIGID, i );
-        fwprintf( pStream, L"%s\t\t%s %d\n", indent.data(), ID_PHYSIQUE_NUM_NODASSINE, numWeights );
-        fwprintf( pStream, L"%s\t\t%s {\n", indent.data(), ID_PHYSIQUE_NODE_LIST );
-
-
-		struct BoneBiggestWeight
-		{
-			int iIndex;
-			std::wstring strBoneName;
-			float fWeight;
-
-
-			BoneBiggestWeight( int idx, std::wstring strname, float fw )
-			{
-				strBoneName = strname;
-				fWeight = fw;
-				iIndex = idx;
-			};
-
-			BoneBiggestWeight() {};
-			~BoneBiggestWeight() {};
-		};
-
-		std::vector<BoneBiggestWeight> vWeights;
-
-        for ( int j = 0; j < numWeights; j++ )
-        {
-			int iBoneIndex = skin_data->GetAssignedBone( i, j );
-            INode * pBone = skin->GetBone( iBoneIndex );
-            weight = skin_data->GetBoneWeight( i, j );
-            if ( weight == 0.000000 ) continue;
-            nodeName = pBone->GetName();
-
-			vWeights.push_back( BoneBiggestWeight( iBoneIndex, std::wstring(nodeName), weight ) );
-
-			//fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, weight, nodeName );
-        }
-
-		/*
-        std::sort( vWeights.begin(), vWeights.end(),
-                   []( const BoneBiggestWeight & a, const BoneBiggestWeight & b ) -> bool
-        {
-            return a.fWeight > b.fWeight;
-        } );
-		*/
-		for ( size_t j = 0; j < vWeights.size(); j++ )
-			fwprintf( pStream, L"%s\t\t\t%s %d\t%0.6f\t\"%s\"\n", indent.data(), ID_PHYSIQUE_NODE, j, vWeights[j].fWeight, vWeights[j].strBoneName.c_str() );
-
-        fwprintf( pStream, L"%s\t\t}\n", indent.data() );
-        fwprintf( pStream, L"%s\t}\n", indent.data() );
-    }
-	fwprintf( pStream, L"\t}\n" );
-    pMod->ReleaseInterface( I_SKIN, skin );
-}
-
-
 
 void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
 {
@@ -577,7 +494,6 @@ void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
 	fwprintf(pStream,L"%s}\n",indent.data());
 }
 
-
 int AsciiExp::ExtCount()
 {
 	return 1;
@@ -678,7 +594,6 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 		CheckDlgButton(hWnd, IDC_PHYSIQUE, exp->GetIncludePhysique()); 
 		CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, exp->GetIncludePhysiqueAsSkin() );
 		CheckDlgButton( hWnd, IDC_GAMEMODE, exp->GetIsGameMode() );
-		CheckDlgButton( hWnd, IDC_BLENDING_PHYSIQUE, exp->GetIsBlendWeight() );
 		CheckDlgButton( hWnd, IDC_BAKE_OBJS, exp->GetBakeObjects() );
 		CheckDlgButton(hWnd, IDC_NORMALS,  exp->GetIncludeNormals());
 		CheckDlgButton(hWnd, IDC_TEXCOORDS,exp->GetIncludeTextureCoords()); 
@@ -766,7 +681,6 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
 					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
 					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
-					CheckDlgButton( hWnd, IDC_BLENDING_PHYSIQUE, FALSE );
 					CheckDlgButton( hWnd, IDC_BAKE_OBJS, FALSE );
 					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
 					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
@@ -790,8 +704,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 #endif // !DESIGN_VER
 					CheckDlgButton( hWnd, IDC_PHYSIQUE, FALSE );
 					CheckDlgButton( hWnd, IDC_PHYSIQUEASSKIN, FALSE );
-                    CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
-                    CheckDlgButton( hWnd, IDC_BLENDING_PHYSIQUE, FALSE );
+					CheckDlgButton( hWnd, IDC_GAMEMODE, FALSE );
 					CheckDlgButton( hWnd, IDC_BAKE_OBJS, FALSE );
 					CheckDlgButton( hWnd, IDC_NORMALS, FALSE );
 					CheckDlgButton( hWnd, IDC_TEXCOORDS, TRUE );
@@ -827,8 +740,7 @@ static INT_PTR CALLBACK ExportDlgProc(HWND hWnd, UINT msg,
 #endif // !DESIGN_VER
 			exp->SetIncludePhysique(IsDlgButtonChecked(hWnd, IDC_PHYSIQUE)); 
 			exp->SetIncludePhysiqueAsSkin( IsDlgButtonChecked( hWnd, IDC_PHYSIQUEASSKIN ) );
-            exp->SetGameMode( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
-            exp->SetBlendWeight( IsDlgButtonChecked( hWnd, IDC_BLENDING_PHYSIQUE ) );
+			exp->SetGameMode( IsDlgButtonChecked( hWnd, IDC_GAMEMODE ) );
 			exp->SetBakeObjects( IsDlgButtonChecked( hWnd, IDC_BAKE_OBJS ) );
 			exp->SetIncludeNormals(IsDlgButtonChecked(hWnd, IDC_NORMALS));
 			exp->SetIncludeTextureCoords(IsDlgButtonChecked(hWnd, IDC_TEXCOORDS)); 

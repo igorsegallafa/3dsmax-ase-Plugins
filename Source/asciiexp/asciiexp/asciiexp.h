@@ -64,10 +64,8 @@ public:
 	Modifier * FindSkinModifier(INode *pNode);
 	Modifier * FindPhysiqueModifier(INode *pNode);
 	
-    void ExportPhysiqueDataFromSkin( INode * pNode, Modifier * pMod, int indentLevel );
-    void ExportPhysiqueDataFromSkinNew( INode * pNode, Modifier * pMod, int indentLevel );
-    void ExportPhysiqueData( INode * pNode, Modifier * pMod, int indentLevel );
-    void ExportPhysiqueDataNew( INode * pNode, Modifier * pMod, int indentLevel );
+	void ExportPhysiqueDataFromSkin(INode *pNode, Modifier *pMod, int indentLevel);
+	void ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel);
 
 	// SceneExport methods
 	int    ExtCount();     // Number of extensions supported 
@@ -162,7 +160,6 @@ public:
 	inline BOOL	GetIncludePhysique()		{ return bIncludePhysique; }
 	inline BOOL	GetIncludePhysiqueAsSkin()  { return bIncludePhysiqueAsSkin; }
 	inline BOOL	GetIsGameMode()				{ return bGameMode; }
-	inline BOOL GetIsBlendWeight()			{ return bBlendWeight; }
 	inline BOOL	GetBakeObjects()			{ return bBakeObjects; }
 	inline BOOL	GetIsLightningMap()			{ return bLightningMap; }
 	inline BOOL	GetIncludeNormals()			{ return bIncludeNormals; }
@@ -190,8 +187,7 @@ public:
 	inline void	SetIncludePhysique(BOOL val)		{ bIncludePhysique = val; }
 	inline void	SetIncludePhysiqueAsSkin( BOOL val ){ bIncludePhysiqueAsSkin = val; }
 	inline void	SetGameMode( BOOL val )				{ bGameMode = val; }
-	inline void	SetBlendWeight( BOOL val )			{ bBlendWeight = val; }
-	inline void	SetBakeObjects( BOOL val )			{ bBakeObjects = val; }
+	inline void	SetBakeObjects( BOOL val )				{ bBakeObjects = val; }
 	inline void	SetLightningMap( BOOL val )			{ bLightningMap = val; }
 	inline void	SetIncludeNormals(BOOL val)			{ bIncludeNormals = val; }
 	inline void	SetIncludeTextureCoords(BOOL val)	{ bIncludeTextureCoords = val; }
@@ -217,7 +213,6 @@ private:
 	BOOL	bIncludePhysique;
 	BOOL	bIncludePhysiqueAsSkin;
 	BOOL	bGameMode;
-	BOOL	bBlendWeight;
 	BOOL	bBakeObjects;
 	BOOL	bLightningMap;
 	BOOL	bIncludeNormals;

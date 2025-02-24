@@ -230,15 +230,15 @@ int AsciiImp::GetInt()
 
 // Get a string from the file and strip
 // leading and trailing quotes.
-const wchar_t* AsciiImp::GetString()
+TSTR AsciiImp::GetString()
 {
-	TSTR string;
+	static TSTR string;
 	
 	string = GetToken();
 	string.remove(0, 1);
 	string.remove(string.length()-1);
 	
-	return string.data();
+	return string;
 }
 
 // Get a full Matrix3 from the file
@@ -481,7 +481,7 @@ BOOL AsciiImp::ImportTMAnimation()
 		token = GetToken();
 		if (Compare(token, ID_NODE_NAME)) 
 		{
-			node = GetNodeByName(GetString());
+			node = GetNodeByName(GetString().data());
 		}
 		/*********************************************************************/
 		//
@@ -1043,62 +1043,16 @@ BOOL AsciiImp::ImportPhysique(INode *pNode)
 
 			physList.push_back( p );
 		}
-        else if ( Compare( token, ID_PHYSIQUE_NOBLEND_RIGID ) )
-        {
-            int vertex = GetInt();
-            WStr boneName = GetString();
+		if (Compare(token, ID_PHYSIQUE_NOBLEND_RIGID))
+		{
+			int vertex = GetInt();
+			WStr boneName = GetString();
 
-            if ( p )
-            {
-                p->AddBone( vertex, boneName.ToCStr().data() );
-            }
-        }
-        else if ( Compare( token, ID_PHYSIQUE_BLEND_RIGID ) )
-        {
-            int vertex = GetInt();
-			int level2 = 0;
-
-			int numnodes = 0;
-            do
-            {
-				token = GetToken();
-
-                if ( Compare( token, ID_PHYSIQUE_NUM_NODASSINE ) )
-                {
-                    numnodes = GetInt();
-                }
-                else if ( Compare( token, ID_PHYSIQUE_NODE_LIST ) )
-                {
-					int level3 = 0;
-
-					do 
-					{				
-						token = GetToken();
-
-						if ( Compare( token, ID_PHYSIQUE_NODE ) )
-						{
-							int idnode = GetInt();
-							float fWeight = GetFloat();
-							WStr strBoneName = GetString();
-
-							if ( p )
-								p->AddBone( vertex, strBoneName.ToCStr().data(), fWeight );
-
-						}
-						else if ( Compare( token, L"{" ) )
-							level3++;
-						else if ( Compare( token, L"}" ) )
-							level3--;
-                    }
-                    while ( level3 > 0 );
-                }
-                else if ( Compare( token, L"{" ) )
-                    level2++;
-                else if ( Compare( token, L"}" ) )
-                    level2--;
-            }
-            while ( level2 > 0 );
-        }
+			if( p )
+			{
+				p->AddBone( vertex, boneName.ToCStr().data() );
+			}
+		}
 		else if (Compare(token, L"{"))
 			level++;
 		else if (Compare(token, L"}"))
@@ -1204,33 +1158,29 @@ void AsciiImp::FinalizePhysique()
 					bones.SetCount( 0 );
 					
 					//Loop through each vertex
-					auto bonesNames = p->GetBonesNames();
+					std::vector<std::string> bonesNames = p->GetBonesNames();
 					for( UINT j = 0; j < bonesNames.size(); j++ )
 					{
 						int numVertex = j;
+						std::string boneName = bonesNames[j];
 
-						for ( auto & v : bonesNames[j] )
+						//Now we can get the bone node since we already gone through each geomobject..
+						INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ));
+						if(pBoneNode)
 						{
-							std::string boneName = v.first;
+							bool exists = false;
 
-							//Now we can get the bone node since we already gone through each geom object..
-							INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ) );
-							if ( pBoneNode )
+							for( int z = 0; z < bones.Count(); z++ )
 							{
-								bool exists = false;
-
-								for ( int z = 0; z < bones.Count(); z++ )
-								{
-									if ( bones[z] == pBoneNode )
-										exists = true;
-								}
-
-								if ( !exists )
-									bones.Append( 1, &pBoneNode );
+								if( bones[z] == pBoneNode )
+									exists = true;
 							}
-							else
-								ERRORBOX( "Phys 2 Skin ERROR [1]: Bone %s not found!", boneName.c_str() );
+
+							if( !exists )
+								bones.Append( 1, &pBoneNode );
 						}
+						else
+							ERRORBOX( "Phys 2 Skin ERROR [1]: Bone %s not found!", boneName.c_str() );
 					}
 
 					for( int i = 0; i < bones.Count(); i++ )
@@ -1254,28 +1204,24 @@ void AsciiImp::FinalizePhysique()
 						der_obj->Eval( 0, 0 );
 						
 						int numVertex = j;
-
-                        Tab<INode *> boneImp;
-                        Tab<float> weightImp;
-
-						for ( auto & v : bonesNames[j] )
+						std::string boneName = bonesNames[j];
+						
+						//Now we can get the bone node since we already gone through each geomobject..
+						INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str()) );
+						if(pBoneNode)
 						{
-							auto boneName = v.first;
+							Tab<INode*> boneImp;
+							Tab<float> weightImp;
 
-							//Now we can get the bone node since we already gone through each geomobject..
-							INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ) );
-							if ( pBoneNode )
-							{
-								boneImp.Append( 1, &pBoneNode );
-								float fWeight = v.second;
-								weightImp.Append( 1, &fWeight );
-							}
-							else
-								ERRORBOX( "Phys 2 Skin ERROR [2]: Bone %s not found!", boneName.c_str() );
+							boneImp.Append( 1, &pBoneNode );
+							float fWeight = 1.0f;
+							weightImp.Append( 1, &fWeight );
+
+							if( !skinImp->AddWeights( pNode, numVertex, boneImp, weightImp ) )
+								ERRORBOX( "AddWeights failed for vertex # %d [Node: %s]", numVertex, pNode->GetName() );
 						}
-
-                        if ( !skinImp->AddWeights( pNode, numVertex, boneImp, weightImp ) )
-                            ERRORBOX( "AddWeights failed for vertex # %d [Node: %s]", numVertex, pNode->GetName() );
+						else
+							ERRORBOX( "Phys 2 Skin ERROR [2]: Bone %s not found!", boneName.c_str() );
 					}
 				}
 				else
@@ -1295,16 +1241,16 @@ void AsciiImp::FinalizePhysique()
 					pNode->EvalWorldState( GetCOREInterface()->GetTime() );
 
 					//Go through each vertex assignment
-					auto bonesNames = p->GetBonesNames();
+					std::vector<std::string> bonesNames = p->GetBonesNames();
 					for( UINT j = 0; j < bonesNames.size(); j++ )
 					{
 						der_obj->Eval( 0, 0 );
 						
 						int numVertex = j;
-						auto boneName = bonesNames[numVertex];
+						std::string boneName = bonesNames[numVertex];
 
 						//Now we can get the bone node since we already gone through each geomobject..
-						INode * pBoneNode = GetNodeByName(GetWC(boneName[0].first.c_str()));
+						INode * pBoneNode = GetNodeByName(GetWC(boneName.c_str()));
 						if(pBoneNode)
 						{
 							IPhyVertexImport * vertImp = phyContImp->SetVertexInterface(numVertex,RIGID_NON_BLENDED_TYPE);
@@ -1321,7 +1267,7 @@ void AsciiImp::FinalizePhysique()
 							phyContImp->ReleaseVertexInterface(vertImp);
 						}
 						else
-							ERRORBOX( "Physique ERROR: Bone %s not found!", boneName[0].first.c_str() );
+							ERRORBOX( "Physique ERROR: Bone %s not found!", boneName.c_str() );
 					}
 
 					phyImp->ReleaseContextInterface(phyContImp);
@@ -1355,7 +1301,6 @@ BOOL AsciiImp::GetVertexList(TriObject* tri)
 		{
 			int vxNo = GetInt();
 			Point3 vx = GetPoint3();
-
 			tri->mesh.setVert(vxNo, vx);
 		}
 	} while (!done);
@@ -1795,7 +1740,7 @@ BOOL AsciiImp::ImportGeomObject()
 		}
 		else if (Compare(token, ID_NODE_NAME)) 
 		{
-			nodeName = GetString();
+			nodeName = GetString().data();
 #ifdef USE_IMPNODES
 			node->SetName(nodeName);
 #else
@@ -1804,7 +1749,7 @@ BOOL AsciiImp::ImportGeomObject()
 		}
 		else if (Compare(token, ID_NODE_PARENT)) 
 		{
-			parentNode = GetNodeByName(GetString());
+			parentNode = GetNodeByName(GetString().data());
 			if (parentNode && parentNode != realINode) 
 			{
 				parentNode->AttachChild(realINode, 1);
@@ -2147,7 +2092,7 @@ BOOL AsciiImp::GetLightExclusions(GenLight* light)
 			el.SetFlag(NT_AFFECT_SHADOWCAST, GetInt());
 		}
 		else if (Compare(token, ID_LIGHT_EXCLUDED)) {
-			el.AddName(GetString());
+			el.AddName(GetString().data());
 		}
 	} while (!done);
 	
@@ -2438,14 +2383,14 @@ BOOL AsciiImp::ImportHelper()
 			nodeTM = GetNodeTM(tmp, iFlags);
 		}
 		else if (Compare(token, ID_NODE_PARENT)) {
-			parentNode = GetNodeByName(GetString());
+			parentNode = GetNodeByName(GetString().data());
 			if (parentNode && parentNode != realINode) {
 				parentNode->AttachChild(realINode, 1);
 			}
 		}
 		else if (Compare(token, ID_NODE_NAME)) {
 #ifdef USE_IMPNODES
-			node->SetName(GetString());
+			node->SetName(GetString().data());
 #else
 			realINode->SetName(GetString());
 #endif
@@ -3194,7 +3139,7 @@ BOOL AsciiImp::GetBitmapTexture(Texmap*& tex, float& amount)
 			level--;
 		else if (Compare(token, ID_BITMAP)) 
 		{
-			std::wstring originalTextureFile = GetString();
+			std::wstring originalTextureFile = GetString().data();
 
 			FILE* pFile = nullptr;
 			_wfopen_s( &pFile, originalTextureFile.c_str(), L"rb" );

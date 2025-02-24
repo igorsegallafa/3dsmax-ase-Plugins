@@ -13,12 +13,12 @@ Phys::~Phys()
 {
 }
 
-void Phys::AddBone( size_t numVertex, std::string boneName, float fWeight )
+void Phys::AddBone( size_t numVertex, std::string boneName )
 {
 	size_t size = bonesNames.size();
 
 	if( numVertex < 0 || numVertex >= size )
 		return;
 
-	bonesNames[numVertex].push_back( make_pair( boneName, fWeight ) );
+	bonesNames[numVertex] = boneName;
 }

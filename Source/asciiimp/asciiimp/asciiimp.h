@@ -112,7 +112,7 @@ public:
 	Point3	GetPoint3();
 	int		GetInt();
 	float	GetFloat();
-	const wchar_t*	GetString();
+	TSTR	GetString();
 	Matrix3	GetNodeTM(TSTR& name, DWORD& iFlags);
 	INode*	GetNodeByName(const TCHAR* name);
 	BOOL	RecordNode(INode* node);
