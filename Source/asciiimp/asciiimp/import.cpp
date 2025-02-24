@@ -230,15 +230,15 @@ int AsciiImp::GetInt()
 
 // Get a string from the file and strip
 // leading and trailing quotes.
-TSTR AsciiImp::GetString()
+const wchar_t* AsciiImp::GetString()
 {
-	static TSTR string;
+	TSTR string;
 	
 	string = GetToken();
 	string.remove(0, 1);
 	string.remove(string.length()-1);
 	
-	return string;
+	return string.data();
 }
 
 // Get a full Matrix3 from the file
@@ -1211,7 +1211,7 @@ void AsciiImp::FinalizePhysique()
 
 						for ( auto & v : bonesNames[j] )
 						{
-							string boneName = v.first;
+							std::string boneName = v.first;
 
 							//Now we can get the bone node since we already gone through each geom object..
 							INode * pBoneNode = GetNodeByName( GetWC( boneName.c_str() ) );

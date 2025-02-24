@@ -87,10 +87,10 @@ class AsciiImpClassDesc:public ClassDesc {
 public:
 	int                     IsPublic() {return 1;}
 	void *                  Create(BOOL loading = FALSE) {return new AsciiImp;} 
-	const TCHAR *   ClassName() {return _T("AsciiImp");}
+	const TCHAR *			ClassName() {return _T("AsciiImp");}
+	const MCHAR *			NonLocalizedClassName() { return ClassName(); }
 	SClass_ID               SuperClassID() {return SCENE_IMPORT_CLASS_ID;} 
-	Class_ID                ClassID() {return Class_ID(ASCIIIMP_CLASS_ID1,
-		ASCIIIMP_CLASS_ID2);}
+	Class_ID                ClassID() {return Class_ID(ASCIIIMP_CLASS_ID1, ASCIIIMP_CLASS_ID2);}
 	const TCHAR*    Category() {return _T("Chrutilities");}
 };
 

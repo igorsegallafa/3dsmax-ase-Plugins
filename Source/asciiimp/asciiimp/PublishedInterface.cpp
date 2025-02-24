@@ -733,7 +733,7 @@ bool IPhysiqueInterface::BipedFigureMode(INode* node, bool state)
       if (node->IsRootNode()) return false;
 
       Control* c = node->GetTMController();
-    if ((c->ClassID() == BIPSLAVE_CONTROL_CLASS_ID) ||
+    if ((c->ClassID() == BIPDRIVEN_CONTROL_CLASS_ID) ||
          (c->ClassID() == BIPBODY_CONTROL_CLASS_ID) ||
          (c->ClassID() == FOOTPRINT_CLASS_ID))
     {
@@ -744,10 +744,10 @@ bool IPhysiqueInterface::BipedFigureMode(INode* node, bool state)
                   if (state) iBiped->BeginFigureMode(0);
                   else iBiped->EndFigureMode(0);
 
-                  Control* iMaster = (Control *) c->GetInterface(I_MASTER);
+                  Control* iMaster = (Control *) c->GetInterface(I_DRIVER);
                   iMaster->NotifyDependents(FOREVER, PART_TM, REFMSG_CHANGE);
                   
-                  c->ReleaseInterface(I_MASTER,iMaster);
+                  c->ReleaseInterface(I_DRIVER,iMaster);
                   c->ReleaseInterface(I_BIPINTERFACE,iBiped);
                   return true;
             }

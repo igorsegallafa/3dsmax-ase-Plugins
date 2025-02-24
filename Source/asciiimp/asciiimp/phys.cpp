@@ -13,7 +13,7 @@ Phys::~Phys()
 {
 }
 
-void Phys::AddBone( size_t numVertex, string boneName, float fWeight )
+void Phys::AddBone( size_t numVertex, std::string boneName, float fWeight )
 {
 	size_t size = bonesNames.size();
 

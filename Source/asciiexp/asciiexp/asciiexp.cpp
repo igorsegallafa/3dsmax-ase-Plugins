@@ -74,6 +74,7 @@ public:
 	int				IsPublic() { return 1; }
 	void*			Create(BOOL loading = FALSE) { return new AsciiExp; } 
 	const TCHAR*	ClassName() { return GetString(IDS_ASCIIEXP); }
+	const MCHAR*	NonLocalizedClassName(){ return ClassName(); }
 	SClass_ID		SuperClassID() { return SCENE_EXPORT_CLASS_ID; } 
 	Class_ID		ClassID() { return ASCIIEXP_CLASS_ID; }
 	const TCHAR*	Category() { return GetString(IDS_CATEGORY); }
@@ -934,7 +935,7 @@ for x in nodes do (OrgControl x)
 
 )PROG" );
 
-	ExecuteMAXScriptScript( strText.c_str() );
+	ExecuteMAXScriptScript( strText.c_str(), MAXScript::ScriptSource::Dynamic);
 }
 
 // Start the exporter!

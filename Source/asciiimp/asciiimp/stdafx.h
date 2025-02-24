@@ -30,6 +30,7 @@
 #include "targetver.h"
 
 #define _CRT_SECURE_NO_WARNINGS
+#define NOMINMAX 1
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
@@ -44,7 +45,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-using namespace std;
 
 //Convert Char to WChar
 const wchar_t *GetWC( const char *c );

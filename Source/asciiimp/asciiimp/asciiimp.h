@@ -112,7 +112,7 @@ public:
 	Point3	GetPoint3();
 	int		GetInt();
 	float	GetFloat();
-	TSTR	GetString();
+	const wchar_t*	GetString();
 	Matrix3	GetNodeTM(TSTR& name, DWORD& iFlags);
 	INode*	GetNodeByName(const TCHAR* name);
 	BOOL	RecordNode(INode* node);
@@ -211,7 +211,7 @@ private:
 	GroupManager	groupMgr;
 	
 	//Extra added.. Physique
-	vector<Phys*>	physList;
+	std::vector<Phys*>	physList;
 };
 
 #endif // __ASCIIIMP__H
