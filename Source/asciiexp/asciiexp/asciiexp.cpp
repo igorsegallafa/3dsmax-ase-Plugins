@@ -319,7 +319,7 @@ void AsciiExp::ExportPhysiqueDataFromSkin(INode *pNode, Modifier *pMod, int inde
 		if( pChosenBone )
 		{
 			//Just export it
-			fwprintf(pStream,L"%s\t%s %d\t\"%s\"\n",indent.data(),ID_PHYSIQUE_NOBLEND_RIGID, i, pChosenBone->GetName());
+			fwprintf(pStream,L"%s\t%s %d\t\"%s\"\n",indent.data(),ID_PHYSIQUE_NOBLEND_RIGID, i, FixupName(pChosenBone->GetName(), pChosenBone));
 		}
 		else
 		{
@@ -439,7 +439,7 @@ void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
 					for (int x = 0; x<numNode; x++)
 					{
 						//Get the pNode and its name for export
-						TSTR name = rb_vtx->GetNode(x)->GetName();
+						TSTR name = FixupName(rb_vtx->GetNode(x)->GetName(), rb_vtx->GetNode(x));
 						//Get the weight
 						float weight = rb_vtx->GetWeight(x);;
 
@@ -470,7 +470,7 @@ void AsciiExp::ExportPhysiqueData(INode *pNode, Modifier *pMod, int indentLevel)
     
 					//get the pNode and its name for export
 					INode* pBone = r_vtx->GetNode();
-					TSTR nodeName = pBone->GetName();
+					TSTR nodeName = FixupName(pBone->GetName(), r_vtx->GetNode());
 
 					//Export it!
 					fwprintf(pStream,L"%s\t%s %d\t\"%s\"\n",indent.data(),ID_PHYSIQUE_NOBLEND_RIGID, i, nodeName.data());

@@ -551,12 +551,12 @@ void AsciiExp::ExportNodeHeader(INode* node, TCHAR* type, int indentLevel)
 	fwprintf(pStream,L"%s%s {\n", indent.data(), type);
 	
 	// Node name
-	fwprintf(pStream,L"%s\t%s \"%s\"\n", indent.data(), ID_NODE_NAME, FixupName(node->GetName()));
-	
+	fwprintf(pStream,L"%s\t%s \"%s\"\n", indent.data(), ID_NODE_NAME, FixupName(node->GetName(), node));
+
 	//  If the node is linked, export parent node name
 	INode* parent = node->GetParentNode();
 	if (parent && !parent->IsRootNode()) {
-		fwprintf(pStream,L"%s\t%s \"%s\"\n", indent.data(), ID_NODE_PARENT, FixupName(parent->GetName()));
+		fwprintf(pStream,L"%s\t%s \"%s\"\n", indent.data(), ID_NODE_PARENT, FixupName(parent->GetName(), parent));
 	}
 }
 
@@ -578,7 +578,7 @@ void AsciiExp::ExportNodeTM(INode* node, int indentLevel)
 	// (like a camera or a spotlight) has an additional node (the target).
 	// In that case the nodeTM and the targetTM is exported after eachother
 	// and the nodeName is how you can tell them apart.
-	fwprintf(pStream,L"%s\t\t%s \"%s\"\n", indent.data(), ID_NODE_NAME, FixupName(node->GetName()));
+	fwprintf(pStream,L"%s\t\t%s \"%s\"\n", indent.data(), ID_NODE_NAME, FixupName(node->GetName(), node));
 
 	// Export TM inheritance flags
 	DWORD iFlags = node->GetTMController()->GetInheritanceFlags();
@@ -1216,6 +1216,29 @@ void AsciiExp::DumpMaterial(Mtl* mtl, int mtlID, int subNo, int indentLevel)
 }
 
 
+BOOL AsciiExp::CheckIsSkeleton(INode* node)
+{
+	if (!node)
+		return FALSE;
+
+	Object* obj = node->GetObjectRef();
+	bool isBone = node->IsBoneShowing() || (obj && (obj->ClassID() == Class_ID(BONE_CLASS_ID, 0) || obj->ClassID() == BONE_OBJ_CLASSID));
+
+	if (isBone) {
+		return TRUE;
+	}
+
+	Control* ctrl = node->GetTMController();
+	if (ctrl) {
+		Class_ID cid = ctrl->ClassID();
+		if (cid == BIPDRIVEN_CONTROL_CLASS_ID || cid == BIPBODY_CONTROL_CLASS_ID) {
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
 // For a standard material, this will give us the meaning of a map
 // givien its submap id.
 TCHAR* AsciiExp::GetMapID(Class_ID cid, int subNo)
@@ -1491,25 +1514,15 @@ void AsciiExp::make_face_uv(Face *f, Point3 *tv)
 #define SINGLE_QUOTE 39
 
 // Replace some characters we don't care for.
-MCHAR* AsciiExp::FixupName( LPCMSTR name)
+MCHAR* AsciiExp::FixupName( LPCMSTR name, INode* node)
 {
-	//TODO
-
-	/*static char buffer[256];
-	TCHAR* cPtr;
-	
-    wcscpy(buffer, name);
-    cPtr = buffer;
-	
-    while(*cPtr) {
-		if (*cPtr == '"')
-			*cPtr = SINGLE_QUOTE;
-        else if (*cPtr <= CTL_CHARS)
-			*cPtr = _T('_');
-        cPtr++;
-    }*/
-
 	WStr ret( name );
+
+	const MCHAR* BonePrefix = _T("Bip");
+	if (CheckIsSkeleton(node) && _tcsstr(name, BonePrefix) == 0)
+	{
+		ret = WStr(_T("Bip01 ")) + ret;
+	}
 	
 	return ret.dataForWrite();
 }

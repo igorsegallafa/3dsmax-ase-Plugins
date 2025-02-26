@@ -124,13 +124,14 @@ public:
 	void	DumpScaleKeys(Control* cont, int indentLevel);
 
 	// Misc methods
+    BOOL    CheckIsSkeleton(INode* node);
 	TCHAR*	GetMapID(Class_ID cid, int subNo);
 	Point3	GetVertexNormal(Mesh* mesh, int faceNo, RVertex* rv);
 	BOOL	CheckForAndExportFaceMap(Mtl* mtl, Mesh* mesh, int indentLevel); 
 	void	make_face_uv(Face *f, Point3 *tv);
 	BOOL	TMNegParity(Matrix3 &m);
 	TSTR	GetIndent(int indentLevel);
-	MCHAR*	FixupName( LPCMSTR name);
+	MCHAR*	FixupName( LPCMSTR name, INode* node = nullptr);
 	void	CommaScan(TCHAR* buf);
 	BOOL	CheckForAnimation(INode* node, BOOL& pos, BOOL& rot, BOOL& scale);
 	TriObject*	GetTriObjectFromNode(INode *node, TimeValue t, int &deleteIt);

@@ -58,7 +58,7 @@ void AsciiExp::ExportAnimKeys(INode* node, int indentLevel)
 
 			fwprintf(pStream,L"%s\t%s {\n", indent.data(), ID_TM_ANIMATION); 
 			fwprintf(pStream,L"%s\t\t%s \"%s\"\n", indent.data(), ID_NODE_NAME,
-				FixupName(node->GetName()));
+				FixupName(node->GetName(), node));
 
 			DumpPosKeys(node->GetTMController()->GetPositionController(), indentLevel);
 			DumpRotKeys(node->GetTMController()->GetRotationController(), indentLevel);
@@ -70,7 +70,7 @@ void AsciiExp::ExportAnimKeys(INode* node, int indentLevel)
 	else if (CheckForAnimation(node, bPosAnim, bRotAnim, bScaleAnim)) {
 		fwprintf(pStream,L"%s\t%s {\n", indent.data(), ID_TM_ANIMATION); 
 		fwprintf(pStream,L"%s\t\t%s \"%s\"\n", indent.data(), ID_NODE_NAME,
-			FixupName(node->GetName()));
+			FixupName(node->GetName(), node));
 
 		if (bPosAnim) {
 			DumpPosSample(node, indentLevel);
