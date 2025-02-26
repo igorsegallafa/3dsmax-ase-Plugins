@@ -2482,6 +2482,10 @@ Mtl* AsciiImp::GetMaterial()
 				GetStandardMtl(mtl);
 				level--;
 			}
+			if (Compare(texClass, _T("Standard (Legacy)"))) {
+				GetStandardMtl(mtl);
+				level--;
+			}
 			else if (Compare(texClass, _T("Multi/Sub-Object"))) {
 				GetMultiSubObjMtl(mtl);
 				level--;
